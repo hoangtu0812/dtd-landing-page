@@ -1,3 +1,4 @@
+import {mountArchitecture} from './architecture.js';
 import {loadConfig,safeUrl} from './data-model.mjs';
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -37,6 +38,7 @@ function renderRoadmap(kind){
   $('#roadmap-panel').innerHTML=rows.length?'<div class="timeline">'+rows.map(row=>'<article class="phase"><div class="phase-year">'+esc(row.period)+'</div><div class="phase-line"></div><h3>'+esc(row.title)+'</h3><p class="phase-description">'+esc(row.description)+'</p></article>').join('')+'</div>':empty('lộ trình','roadmaps');
 }
 function render(){
+  const architecture=config.architecture;$('#architecture').hidden=!architecture.enabled;$('#architecture-nav').hidden=!architecture.enabled;if(architecture.enabled)mountArchitecture($('#architecture-root'),architecture);
   const org=config.organization;document.title='BSR Digital · '+org.department;
   $('.hero-intro').textContent=org.department;$('.hero-desc').replaceChildren(document.createTextNode(org.parent),document.createElement('br'),document.createTextNode(org.company));
   $('.footer-main p').replaceChildren(document.createTextNode(org.department),document.createElement('br'),document.createTextNode(org.parent),document.createElement('br'),document.createTextNode(org.company));

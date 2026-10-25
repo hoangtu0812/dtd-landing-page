@@ -1,7 +1,8 @@
+import {createArchitectureEditor} from '/admin/assets/architecture-editor.js';
 import {loadConfig,validateConfig,clone} from '/data-model.mjs';
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let draft,mode,revision,dirty=false,pendingDelete=null,avatarJobs=0;
+let draft,mode,revision,dirty=false,pendingDelete=null,avatarJobs=0,architectureEditor;
 const labels={people:'Nhân sự / nhóm',missions:'Nhiệm vụ',applications:'Ứng dụng',digitalRoadmap:'Mốc chuyển đổi số',applicationRoadmap:'Mốc ứng dụng'};
 const schemas={
   missions:[['title','Tên nhiệm vụ',180],['description','Mô tả nhiệm vụ',2000,'textarea']],
@@ -29,7 +30,7 @@ function renderList(key){
     return open+'<div class="avatar-editor">'+(row.avatar?'<img src="'+esc(row.avatar)+'" alt="Avatar '+esc(row.name)+'">':'<span class="avatar-fallback" aria-label="Chưa có ảnh">♙</span>')+'<div class="avatar-controls"><label class="secondary import-label">'+(row.avatar?'Thay ảnh':'Thêm avatar')+'<input type="file" data-avatar accept="image/jpeg,image/png,image/webp" aria-label="Chọn avatar cho '+esc(row.name||'mục mới')+'"></label>'+(row.avatar?'<button type="button" class="text-button" data-remove-avatar>Xoá ảnh</button>':'')+'<small>JPG, PNG, WebP · Tối đa 5 MB · Ảnh được thu nhỏ khi lưu</small></div></div><div class="fields-grid"><label>Loại mục<select data-field="type"><option value="person"'+(row.type==='person'?' selected':'')+'>Nhân sự</option><option value="team"'+(row.type==='team'?' selected':'')+'>Nhóm / bộ phận</option></select></label>'+field('name','Họ tên / Tên nhóm',row.name,150,'text',true)+field('title','Chức danh / Vai trò',row.title,160)+'<label>Trực thuộc<select data-field="parentId">'+parentOptions(row)+'</select></label>'+field('description','Mô tả / Phụ trách',row.description,1200,'textarea')+'</div></article>';
   }).join('');
 }
-function render(){document.querySelectorAll('[data-org]').forEach(input=>{input.value=draft.organization[input.dataset.org];});Object.keys(labels).forEach(renderList);}
+function render(){document.querySelectorAll('[data-org]').forEach(input=>{input.value=draft.organization[input.dataset.org];});Object.keys(labels).forEach(renderList);architectureEditor?.destroy();architectureEditor=createArchitectureEditor($('#architecture-editor'),{getValue:()=>draft.architecture,onChange:markDirty,onMessage:message});}
 function refreshParents(){document.querySelectorAll('[data-list="people"]').forEach(card=>{const person=draft.people[Number(card.dataset.index)];card.querySelector('[data-field="parentId"]').innerHTML=parentOptions(person);});}
 $('#config-form').addEventListener('input',event=>{
   const target=event.target;if(target.dataset.org){draft.organization[target.dataset.org]=target.value;markDirty();return;}

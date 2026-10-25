@@ -54,3 +54,25 @@ Chỉnh sửa trên local, kiểm tra nội dung rồi triển khai lại Sites 
 - preview.mjs: kiểm tra phiên, Origin, Host, xung đột trước khi ghi.
 - node --test tests/config.test.mjs: kiểm tra xác thực, phiên, API và dữ liệu.
 - Logo gốc giữ nguyên trong dist/logoBSR.png. Xanh lá #2e9150, xanh chàm #3e478e.
+
+
+## Kiến trúc hệ thống CNTT
+
+Section sau roadmap hiển thị các tầng, ứng dụng và kết nối. Chọn ứng dụng để làm nổi bật các kết nối trực tiếp; bấm **Xem kiến trúc chi tiết** để mở mô hình thành phần. Các luồng có chiều, mô tả và giao thức. Điện thoại có nút chi tiết ngay dưới ứng dụng đang chọn.
+
+Dữ liệu ban đầu gồm 5 tầng, 13 hệ thống và 15 kết nối **minh hoạ**, chưa mô tả kiến trúc thực tế của BSR.
+
+### Thiết đặt trong admin
+
+1. Chạy máy chủ bằng `node preview.mjs`, đăng nhập `http://127.0.0.1:4173/admin` bằng mật khẩu đã thiết lập (hoặc chạy `node setup-admin.mjs` để thiết lập lần đầu).
+2. Mở **06 · Kiến trúc hệ thống**. Sửa tiêu đề, mô tả, nhãn minh hoạ, bảo mật hoặc bật/tắt section.
+3. **Tầng kiến trúc**: thêm, đổi tên, sắp xếp các tầng.
+4. **Ứng dụng & thành phần**: tạo/chọn hệ thống, gán tầng, nhập mô tả, phụ trách, trạng thái; thiết lập các thành phần thuộc nhóm giao diện, dịch vụ, dữ liệu hoặc hệ thống bên ngoài.
+5. **Kết nối liên ứng dụng**: chọn nguồn, đích, chiều trao đổi, nội dung và giao thức. Kết nối nội bộ được thiết lập trong từng hệ thống.
+6. **Xem thử bản nháp** để thử tương tác trước khi **Lưu cấu hình**. Việc lưu cập nhật tệp local; cập nhật website đã xuất bản cần triển khai lại.
+
+Danh mục kiến trúc độc lập với danh mục ứng dụng giới thiệu để mô tả được cả nền tảng, dịch vụ và hạ tầng. Khi xoá tầng/hệ thống/thành phần, cần chuyển hoặc xoá các mục phụ thuộc và kết nối liên quan trước; biểu mẫu thông báo nếu còn tham chiếu.
+
+Cấu hình lưu trong trường `architecture` của `dist/site-config.json`, cùng chức năng xuất/nhập/sao lưu hiện có. Cấu hình cũ chưa có trường này vẫn nhập được và bắt đầu với kiến trúc trống. Giới hạn: 12 tầng, 80 hệ thống, 200 kết nối liên hệ thống; mỗi hệ thống tối đa 40 thành phần và 80 kết nối nội bộ. Trang admin và mã trình sửa chỉ được phục vụ sau đăng nhập local, không nằm trong bản static đã xuất bản.
+
+Kiểm tra: `node --test tests/config.test.mjs tests/architecture.test.mjs`.

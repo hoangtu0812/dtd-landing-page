@@ -31,6 +31,7 @@ async function fixture(t,{configured=true,sessionTtlMs}={}){
   await writeFile(path.join(root,'index.html'),'<h1>Public page</h1>');
   await writeFile(path.join(adminRoot,'admin.html'),'PRIVATE_EDITOR');
   await writeFile(path.join(adminRoot,'admin.js'),'PRIVATE_SCRIPT');
+  await writeFile(path.join(adminRoot,'architecture-editor.js'),'PRIVATE_ARCHITECTURE_EDITOR');
   const password=randomBytes(24).toString('hex');
   if(configured)await writeFile(authPath,JSON.stringify(await createPasswordRecord(password)));
   const server=createPreviewServer({root,adminRoot,authPath,sessionTtlMs});await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -52,7 +53,7 @@ test('unauthenticated direct paths and API writes are blocked',async t=>{
   for(const route of ['/admin','/admin/','/admin.html','/%61dmin.html']){
     const response=await fetch(f.origin+route);const html=await response.text();assert.match(html,/Đăng nhập quản trị/);assert.doesNotMatch(html,/PRIVATE_EDITOR/);
   }
-  for(const route of ['/admin/assets/admin.js','/admin/assets/admin.css','/admin/auth.mjs'])assert.equal((await fetch(f.origin+route)).status,401);
+  for(const route of ['/admin/assets/admin.js','/admin/assets/admin.css','/admin/assets/architecture-editor.js','/admin/auth.mjs'])assert.equal((await fetch(f.origin+route)).status,401);
   assert.equal((await fetch(f.origin+'/admin.js')).status,404);
   assert.equal((await fetch(f.origin+'/api/config',{method:'PUT',headers:{Origin:f.origin,'Content-Type':'application/json'},body:JSON.stringify(defaults)})).status,401);
   assert.equal((await f.login('wrong')).status,401);
@@ -64,10 +65,13 @@ test('authenticated save persists; stale and cross-origin writes blocked; logout
   assert.equal(await(await fetch(f.origin+'/admin',{headers:{Cookie:cookie}})).text(),'PRIVATE_EDITOR');
   assert.equal(await(await fetch(f.origin+'/admin/assets/admin.js',{headers:{Cookie:cookie}})).text(),'PRIVATE_SCRIPT');
   assert.equal((await fetch(f.origin+'/admin/auth.mjs',{headers:{Cookie:cookie}})).status,404);
+  assert.equal(await(await fetch(f.origin+'/admin/assets/architecture-editor.js',{headers:{Cookie:cookie}})).text(),'PRIVATE_ARCHITECTURE_EDITOR');
   const initial=await(await fetch(f.origin+'/api/config')).json();const updated=clone(defaults);updated.organization.introduction='Persisted test content';
+  updated.architecture=JSON.parse(await readFile(new URL('../dist/site-config.json',import.meta.url),'utf8')).architecture;
   const save=(origin=f.origin,revision=initial.revision)=>fetch(f.origin+'/api/config',{method:'PUT',headers:{Origin:origin,Cookie:cookie,'Content-Type':'application/json','If-Match':revision},body:JSON.stringify(updated)});
   assert.equal((await save('https://external.example')).status,403);assert.equal((await save()).status,200);
   assert.equal(JSON.parse(await readFile(path.join(f.root,'site-config.json'),'utf8')).organization.introduction,'Persisted test content');
+  assert.deepEqual(JSON.parse(await readFile(path.join(f.root,'site-config.json'),'utf8')).architecture,updated.architecture);
   assert.equal((await save()).status,409);
   const logout=await fetch(f.origin+'/api/logout',{method:'POST',headers:{Origin:f.origin,Cookie:cookie}});assert.equal(logout.status,200);
   assert.equal((await save()).status,401);assert.equal((await fetch(f.origin+'/api/admin-session',{headers:{Cookie:cookie}})).status,401);

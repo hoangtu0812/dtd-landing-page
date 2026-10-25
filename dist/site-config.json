@@ -157,5 +157,943 @@
       "title": "Vận hành & cải tiến",
       "description": "Tối ưu hiệu năng và trải nghiệm; mở rộng AI theo kết quả thí điểm; cập nhật sản phẩm dựa trên phản hồi người dùng.\nMốc dự kiến: Đánh giá và cải tiến theo chu kỳ.\nLộ trình mẫu — cần xác nhận khi triển khai."
     }
-  ]
+  ],
+  "architecture": {
+    "enabled": true,
+    "isSample": true,
+    "title": "Một kiến trúc. Nhiều kết nối.",
+    "description": "Từ trải nghiệm người dùng đến nền tảng vận hành — khám phá cách các hệ thống phối hợp trong một tổng thể.",
+    "security": "Định danh & phân quyền · An toàn thông tin · Giám sát & nhật ký · Sao lưu & phục hồi",
+    "layers": [
+      {
+        "id": "channels",
+        "title": "Kênh truy cập",
+        "description": "Điểm chạm với người dùng"
+      },
+      {
+        "id": "business",
+        "title": "Ứng dụng nghiệp vụ",
+        "description": "Số hoá hoạt động doanh nghiệp"
+      },
+      {
+        "id": "integration",
+        "title": "Tích hợp & kết nối",
+        "description": "Trao đổi dữ liệu giữa hệ thống"
+      },
+      {
+        "id": "data",
+        "title": "Dữ liệu & AI",
+        "description": "Tri thức phục vụ quyết định"
+      },
+      {
+        "id": "infrastructure",
+        "title": "Hạ tầng công nghệ",
+        "description": "Nền tảng vận hành tin cậy"
+      }
+    ],
+    "systems": [
+      {
+        "id": "portal",
+        "layerId": "channels",
+        "name": "Cổng làm việc số",
+        "description": "Một điểm truy cập tới thông tin, công việc và dịch vụ nội bộ.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Cổng làm việc số",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "mobile",
+        "layerId": "channels",
+        "name": "Ứng dụng di động",
+        "description": "Tra cứu công việc và nhận thông báo trên thiết bị di động.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Ứng dụng di động",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "erp",
+        "layerId": "business",
+        "name": "ERP",
+        "description": "Kết nối các nghiệp vụ tài chính, mua sắm và quản trị nguồn lực.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ ERP",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "eam",
+        "layerId": "business",
+        "name": "Quản lý tài sản & bảo trì",
+        "description": "Theo dõi hồ sơ thiết bị, kế hoạch bảo trì và lệnh công việc.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Quản lý tài sản & bảo trì",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "workflow",
+        "layerId": "business",
+        "name": "Điều hành & quy trình",
+        "description": "Số hoá luồng phê duyệt và phối hợp công việc.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Điều hành & quy trình",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "gateway",
+        "layerId": "integration",
+        "name": "API Gateway",
+        "description": "Điểm truy cập có kiểm soát cho các giao diện tích hợp.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Bộ xử lý tích hợp",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "bus",
+        "layerId": "integration",
+        "name": "Trục tích hợp",
+        "description": "Điều phối, chuyển đổi và trao đổi thông tin giữa các ứng dụng.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Bộ xử lý tích hợp",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "lake",
+        "layerId": "data",
+        "name": "Nền tảng dữ liệu",
+        "description": "Tập hợp và chuẩn hoá dữ liệu phục vụ phân tích.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Nền tảng dữ liệu",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Kho dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "bi",
+        "layerId": "data",
+        "name": "Báo cáo điều hành",
+        "description": "Trực quan hoá dữ liệu thành báo cáo và chỉ số quản trị.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "dash",
+            "name": "Dashboard điều hành",
+            "kind": "interface",
+            "description": "Chỉ số tổng hợp và báo cáo theo vai trò."
+          },
+          {
+            "id": "report",
+            "name": "Dịch vụ báo cáo",
+            "kind": "service",
+            "description": "Xử lý truy vấn và áp dụng phân quyền dữ liệu."
+          },
+          {
+            "id": "model",
+            "name": "Mô hình dữ liệu phân tích",
+            "kind": "data",
+            "description": "Các chiều phân tích và chỉ số được chuẩn hoá."
+          },
+          {
+            "id": "warehouse",
+            "name": "Kho dữ liệu doanh nghiệp",
+            "kind": "external",
+            "description": "Nguồn dữ liệu được kết nối từ nền tảng dữ liệu."
+          }
+        ],
+        "connections": [
+          {
+            "id": "dash-report",
+            "source": "dash",
+            "target": "report",
+            "label": "Truy vấn báo cáo",
+            "protocol": "HTTPS",
+            "direction": "two-way"
+          },
+          {
+            "id": "report-model",
+            "source": "report",
+            "target": "model",
+            "label": "Đọc mô hình & tính chỉ số",
+            "protocol": "Truy vấn phân tích",
+            "direction": "one-way"
+          },
+          {
+            "id": "warehouse-model",
+            "source": "warehouse",
+            "target": "model",
+            "label": "Nạp dữ liệu theo lịch",
+            "protocol": "ETL / ELT",
+            "direction": "one-way"
+          }
+        ]
+      },
+      {
+        "id": "ai",
+        "layerId": "data",
+        "name": "Trợ lý tri thức AI",
+        "description": "Tra cứu tri thức và hỗ trợ người dùng bằng ngôn ngữ tự nhiên.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Giao diện người dùng",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Trợ lý tri thức AI",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Kho dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "compute",
+        "layerId": "infrastructure",
+        "name": "Máy chủ & nền tảng",
+        "description": "Tài nguyên xử lý cho các dịch vụ ứng dụng.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Bảng quản lý",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Máy chủ & nền tảng",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "storage",
+        "layerId": "infrastructure",
+        "name": "Lưu trữ & sao lưu",
+        "description": "Lưu trữ tập trung, sao lưu và phục hồi dữ liệu.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Bảng quản lý",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Lưu trữ & sao lưu",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      },
+      {
+        "id": "network",
+        "layerId": "infrastructure",
+        "name": "Mạng & kết nối",
+        "description": "Kết nối các vùng hệ thống và điểm truy cập.",
+        "owner": "Chưa xác định",
+        "status": "Minh hoạ",
+        "components": [
+          {
+            "id": "ui",
+            "name": "Bảng quản lý",
+            "kind": "interface",
+            "description": "Điểm tương tác, tra cứu và quản trị."
+          },
+          {
+            "id": "service",
+            "name": "Dịch vụ Mạng & kết nối",
+            "kind": "service",
+            "description": "Xử lý yêu cầu và điều phối nghiệp vụ."
+          },
+          {
+            "id": "db",
+            "name": "Cơ sở dữ liệu",
+            "kind": "data",
+            "description": "Lưu trữ dữ liệu và cấu hình của hệ thống."
+          },
+          {
+            "id": "external",
+            "name": "Dịch vụ định danh",
+            "kind": "external",
+            "description": "Xác thực người dùng và kiểm tra quyền truy cập."
+          }
+        ],
+        "connections": [
+          {
+            "id": "ui-api",
+            "source": "ui",
+            "target": "service",
+            "label": "Gửi yêu cầu / nhận kết quả",
+            "protocol": "HTTPS / REST",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-db",
+            "source": "service",
+            "target": "db",
+            "label": "Đọc / ghi dữ liệu",
+            "protocol": "Kết nối dữ liệu",
+            "direction": "two-way"
+          },
+          {
+            "id": "api-auth",
+            "source": "service",
+            "target": "external",
+            "label": "Xác thực & phân quyền",
+            "protocol": "OIDC / OAuth 2.0",
+            "direction": "two-way"
+          }
+        ]
+      }
+    ],
+    "connections": [
+      {
+        "id": "link-0",
+        "source": "portal",
+        "target": "gateway",
+        "label": "Truy cập dịch vụ",
+        "protocol": "HTTPS",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-1",
+        "source": "mobile",
+        "target": "gateway",
+        "label": "Truy cập từ thiết bị di động",
+        "protocol": "HTTPS",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-2",
+        "source": "gateway",
+        "target": "erp",
+        "label": "Trao đổi nghiệp vụ",
+        "protocol": "REST API",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-3",
+        "source": "gateway",
+        "target": "eam",
+        "label": "Tra cứu tài sản",
+        "protocol": "REST API",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-4",
+        "source": "gateway",
+        "target": "workflow",
+        "label": "Xử lý công việc",
+        "protocol": "REST API",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-5",
+        "source": "erp",
+        "target": "bus",
+        "label": "Đồng bộ dữ liệu nghiệp vụ",
+        "protocol": "API / Sự kiện",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-6",
+        "source": "eam",
+        "target": "bus",
+        "label": "Sự kiện tài sản & bảo trì",
+        "protocol": "API / Sự kiện",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-7",
+        "source": "bus",
+        "target": "lake",
+        "label": "Nạp dữ liệu dùng chung",
+        "protocol": "ETL / ELT",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-8",
+        "source": "lake",
+        "target": "bi",
+        "label": "Cấp dữ liệu phân tích",
+        "protocol": "Truy vấn dữ liệu",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-9",
+        "source": "lake",
+        "target": "ai",
+        "label": "Cung cấp nguồn tri thức",
+        "protocol": "API",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-10",
+        "source": "portal",
+        "target": "ai",
+        "label": "Tra cứu tri thức",
+        "protocol": "HTTPS",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-11",
+        "source": "compute",
+        "target": "erp",
+        "label": "Cung cấp tài nguyên xử lý",
+        "protocol": "Dịch vụ nền tảng",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-12",
+        "source": "compute",
+        "target": "gateway",
+        "label": "Vận hành dịch vụ tích hợp",
+        "protocol": "Dịch vụ nền tảng",
+        "direction": "one-way"
+      },
+      {
+        "id": "link-13",
+        "source": "lake",
+        "target": "storage",
+        "label": "Lưu trữ & sao lưu",
+        "protocol": "Dịch vụ lưu trữ",
+        "direction": "two-way"
+      },
+      {
+        "id": "link-14",
+        "source": "network",
+        "target": "compute",
+        "label": "Kết nối hạ tầng",
+        "protocol": "TCP/IP",
+        "direction": "two-way"
+      }
+    ]
+  }
 }

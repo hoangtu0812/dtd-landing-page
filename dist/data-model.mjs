@@ -1,8 +1,9 @@
+import {emptyArchitecture,validateArchitecture} from './architecture-model.mjs';
 export const defaults = {
   version: 1,
   organization: {department:'Phòng Chuyển đổi số',parent:'Ban Công nghệ thông tin và Chuyển đổi số',company:'Tổng Công ty Lọc hoá dầu Việt Nam BSR',introduction:''},
   people: [{id:'le-xuan-hien',name:'Lê Xuân Hiển',title:'Trưởng phòng',type:'person',parentId:'',description:'',avatar:''}],
-  missions: [], applications: [], digitalRoadmap: [], applicationRoadmap: []
+  missions: [], applications: [], digitalRoadmap: [], applicationRoadmap: [], architecture: emptyArchitecture()
 };
 export const clone = value => JSON.parse(JSON.stringify(value));
 const fail = message => {throw new Error(message);};
@@ -26,7 +27,7 @@ export function validateConfig(input){
   const map=new Map(people.map(p=>[p.id,p]));
   for(const p of people){let current=p;const visited=new Set();while(current){if(visited.has(current.id))fail('Quan hệ cấp trên tạo thành vòng lặp. Hãy chọn một cấp trên khác.');visited.add(current.id);if(visited.size>12)fail('Sơ đồ hỗ trợ tối đa 12 cấp.');if(current.parentId&&!map.has(current.parentId))fail('Mục cấp trên không tồn tại.');current=map.get(current.parentId);}}
   function list(key,fields){if(!Array.isArray(input[key])||input[key].length>80)fail('Danh sách nội dung không hợp lệ (tối đa 80 mục).');return input[key].map(row=>{if(!row||typeof row!=='object')fail('Nội dung không hợp lệ.');const result={};for(const [field,limit] of Object.entries(fields))result[field]=text(row[field],field,limit);if(!result.title.trim())fail('Mỗi mục nội dung cần có tiêu đề.');if('url' in result&&result.url&&!safeUrl(result.url))fail('Đường dẫn ứng dụng phải bắt đầu bằng https:// hoặc http://.');return result;});}
-  return {version:1,organization,people,missions:list('missions',{title:180,description:2000}),applications:list('applications',{title:180,description:2000,category:100,status:100,url:1500}),digitalRoadmap:list('digitalRoadmap',{period:80,title:180,description:2000}),applicationRoadmap:list('applicationRoadmap',{period:80,title:180,description:2000})};
+  return {version:1,organization,people,architecture:validateArchitecture(input.architecture),missions:list('missions',{title:180,description:2000}),applications:list('applications',{title:180,description:2000,category:100,status:100,url:1500}),digitalRoadmap:list('digitalRoadmap',{period:80,title:180,description:2000}),applicationRoadmap:list('applicationRoadmap',{period:80,title:180,description:2000})};
 }
 export const storageKey='bsr-site-config-v2';
 export async function loadConfig(){
