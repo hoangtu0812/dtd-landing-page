@@ -4,7 +4,7 @@
     "department": "Phòng Chuyển đổi số",
     "parent": "Ban Công nghệ thông tin và Chuyển đổi số",
     "company": "Tổng Công ty Lọc hoá dầu Việt Nam BSR",
-    "introduction": ""
+    "introduction": "Phòng Chuyển đổi số hướng đến vai trò kết nối nhu cầu nghiệp vụ với sức mạnh công nghệ, đồng hành cùng các đơn vị trong hành trình xây dựng BSR số.\n\nLấy con người làm trung tâm, dữ liệu làm nền tảng và hiệu quả làm thước đo — từ số hoá quy trình đến phát triển những cách làm việc mới.\n\nNội dung tham khảo: các nhóm chuyên môn, chức năng, ứng dụng và lộ trình dưới đây là dữ liệu mẫu để cấu hình, chưa phải thông tin công bố chính thức."
   },
   "people": [
     {
@@ -15,10 +15,147 @@
       "parentId": "",
       "description": "",
       "avatar": ""
+    },
+    {
+      "id": "sample-strategy",
+      "name": "Chiến lược & quản trị số",
+      "title": "Nhóm chuyên môn · Mẫu",
+      "type": "team",
+      "parentId": "le-xuan-hien",
+      "description": "Định hướng, kiến trúc và quản trị danh mục sáng kiến chuyển đổi số.",
+      "avatar": ""
+    },
+    {
+      "id": "sample-solutions",
+      "name": "Phát triển giải pháp số",
+      "title": "Nhóm chuyên môn · Mẫu",
+      "type": "team",
+      "parentId": "le-xuan-hien",
+      "description": "Phân tích nghiệp vụ, xây dựng và tích hợp các ứng dụng.",
+      "avatar": ""
+    },
+    {
+      "id": "sample-data",
+      "name": "Dữ liệu & đổi mới sáng tạo",
+      "title": "Nhóm chuyên môn · Mẫu",
+      "type": "team",
+      "parentId": "le-xuan-hien",
+      "description": "Khai thác dữ liệu, nghiên cứu AI và thúc đẩy đổi mới sáng tạo.",
+      "avatar": ""
     }
   ],
-  "missions": [],
-  "applications": [],
-  "digitalRoadmap": [],
-  "applicationRoadmap": []
+  "missions": [
+    {
+      "title": "Hoạch định chiến lược số",
+      "description": "Đề xuất chiến lược, xây dựng kế hoạch và theo dõi danh mục chương trình chuyển đổi số phù hợp với định hướng của Tổng Công ty."
+    },
+    {
+      "title": "Số hoá quy trình nghiệp vụ",
+      "description": "Phối hợp cùng các đơn vị rà soát, chuẩn hoá quy trình và lựa chọn các công việc có thể số hoá hoặc tự động hoá."
+    },
+    {
+      "title": "Phát triển & tích hợp ứng dụng",
+      "description": "Phân tích yêu cầu, xây dựng giải pháp và kết nối các hệ thống để hỗ trợ nghiệp vụ, giảm thao tác trùng lặp."
+    },
+    {
+      "title": "Quản trị & khai thác dữ liệu",
+      "description": "Đề xuất chuẩn dữ liệu dùng chung, phát triển báo cáo phân tích và hỗ trợ ra quyết định dựa trên dữ liệu."
+    },
+    {
+      "title": "Nghiên cứu & ứng dụng AI",
+      "description": "Khảo sát công nghệ mới, thử nghiệm các bài toán AI và đánh giá tính khả thi trước khi đưa vào sử dụng."
+    },
+    {
+      "title": "Phát triển văn hoá số",
+      "description": "Đào tạo kỹ năng, hướng dẫn sử dụng công cụ và đồng hành cùng các đơn vị trong thay đổi phương thức làm việc."
+    }
+  ],
+  "applications": [
+    {
+      "title": "Không gian làm việc số",
+      "description": "Một điểm truy cập cho công việc, phê duyệt và phối hợp nội bộ.\n• Theo dõi công việc theo nhóm.\n• Luồng phê duyệt trực tuyến.\n• Không gian trao đổi và phối hợp giữa các đơn vị.",
+      "category": "Quản trị & điều hành",
+      "status": "Mẫu · Thí điểm 2027",
+      "url": ""
+    },
+    {
+      "title": "Báo cáo điều hành thông minh",
+      "description": "Trực quan hoá chỉ số và hỗ trợ quyết định điều hành.\n• Tổng hợp chỉ số theo nhu cầu quản trị.\n• Dashboard theo vai trò.\n• Theo dõi xu hướng và cảnh báo theo ngưỡng.",
+      "category": "Dữ liệu & AI",
+      "status": "Mẫu · Thí điểm 2027",
+      "url": ""
+    },
+    {
+      "title": "Trợ lý tri thức AI",
+      "description": "Tìm kiếm thông tin trong nguồn tri thức được phê duyệt.\n• Tra cứu bằng ngôn ngữ tự nhiên.\n• Trả lời kèm tham chiếu tài liệu nguồn.\n• Phân quyền truy cập theo nguồn dữ liệu.",
+      "category": "Dữ liệu & AI",
+      "status": "Mẫu · Nghiên cứu 2027",
+      "url": ""
+    },
+    {
+      "title": "Quản lý tài sản & bảo trì",
+      "description": "Số hoá hồ sơ thiết bị và theo dõi hoạt động bảo trì.\n• Danh mục, hồ sơ tài sản tập trung.\n• Kế hoạch bảo trì và lệnh công việc.\n• Lịch sử kiểm tra, sửa chữa và thay thế.",
+      "category": "Vận hành",
+      "status": "Mẫu · Đề xuất 2028",
+      "url": ""
+    },
+    {
+      "title": "Tự động hoá quy trình",
+      "description": "Giảm thao tác lặp lại và kết nối các bước xử lý nghiệp vụ.\n• Tự động tổng hợp và đối soát dữ liệu.\n• Chuyển thông tin giữa các hệ thống.\n• Theo dõi nhật ký, ngoại lệ và hiệu quả xử lý.",
+      "category": "Quản trị & điều hành",
+      "status": "Mẫu · Thí điểm 2027",
+      "url": ""
+    },
+    {
+      "title": "Nền tảng dữ liệu dùng chung",
+      "description": "Tổ chức và chia sẻ dữ liệu để làm nền tảng cho các dịch vụ số.\n• Danh mục nguồn và chuẩn dữ liệu dùng chung.\n• Kết nối dữ liệu qua giao diện tích hợp.\n• Kiểm soát chất lượng và quyền truy cập.",
+      "category": "Dữ liệu & AI",
+      "status": "Mẫu · Đề xuất 2028",
+      "url": ""
+    }
+  ],
+  "digitalRoadmap": [
+    {
+      "period": "2026",
+      "title": "Xây dựng nền tảng",
+      "description": "Khảo sát hiện trạng và nhu cầu; đề xuất kiến trúc, chuẩn dữ liệu; ưu tiên danh mục sáng kiến.\nĐầu ra dự kiến: Kế hoạch tổng thể.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2027",
+      "title": "Thí điểm & kết nối",
+      "description": "Thí điểm quy trình trọng tâm; kết nối dữ liệu phục vụ báo cáo; đào tạo kỹ năng và hình thành đội ngũ nòng cốt.\nĐầu ra dự kiến: Mô hình thí điểm.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2028",
+      "title": "Mở rộng & tích hợp",
+      "description": "Nhân rộng các giải pháp đã được đánh giá; phát triển nền tảng dữ liệu chung; tích hợp ứng dụng theo kiến trúc.\nĐầu ra dự kiến: Hệ sinh thái kết nối.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2029–2030",
+      "title": "Tối ưu & đổi mới",
+      "description": "Ứng dụng phân tích và AI phù hợp; đo lường giá trị chuyển đổi; cải tiến liên tục theo nhu cầu thực tiễn.\nĐầu ra dự kiến: Vận hành dựa trên dữ liệu.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    }
+  ],
+  "applicationRoadmap": [
+    {
+      "period": "2026",
+      "title": "Khảo sát & thiết kế",
+      "description": "Thu thập yêu cầu của các đơn vị; thiết kế không gian làm việc số; xác định nguồn dữ liệu báo cáo.\nMốc dự kiến: Thống nhất phạm vi và thiết kế.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2027",
+      "title": "Đưa vào thử nghiệm",
+      "description": "Thí điểm không gian làm việc số, dashboard và tự động hoá quy trình; nghiên cứu trợ lý tri thức AI.\nMốc dự kiến: Đánh giá kết quả thử nghiệm.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2028",
+      "title": "Kết nối hệ sinh thái",
+      "description": "Triển khai nền tảng dữ liệu dùng chung; thí điểm quản lý tài sản và bảo trì; mở rộng các ứng dụng đạt yêu cầu.\nMốc dự kiến: Nghiệm thu theo phạm vi.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    },
+    {
+      "period": "2029–2030",
+      "title": "Vận hành & cải tiến",
+      "description": "Tối ưu hiệu năng và trải nghiệm; mở rộng AI theo kết quả thí điểm; cập nhật sản phẩm dựa trên phản hồi người dùng.\nMốc dự kiến: Đánh giá và cải tiến theo chu kỳ.\nLộ trình mẫu — cần xác nhận khi triển khai."
+    }
+  ]
 }

@@ -41,7 +41,7 @@ Chỉnh sửa trên local, kiểm tra nội dung rồi triển khai lại Sites 
 
 - dist/site-config.json: nội dung hiển thị, bao gồm tên và avatar đã chọn công bố.
 - .site-config.backup.json: bản trước lần lưu gần nhất, không được phục vụ web hoặc đưa vào Git.
-- Thông tin ban đầu giữ nguyên các thông tin người dùng cung cấp. Không tự thêm dữ liệu mock.
+- Theo yêu cầu, cấu hình có nội dung mẫu cho giới thiệu, 3 nhóm chuyên môn, 6 nhiệm vụ, 6 ứng dụng và hai roadmap. Các dữ liệu mẫu đều sửa/xoá được trong trang quản trị; cần xác nhận nội dung trước khi dùng chính thức. Thông tin Trưởng phòng Lê Xuân Hiển do người dùng cung cấp.
 - Giới hạn: 80 mục mỗi danh sách, 12 cấp tổ chức; avatar đầu vào JPG/PNG/WebP tối đa 5 MB được thu nhỏ trước khi lưu.
 - Khi xoá mục có cấp dưới, các mục con chuyển lên cấp trên của mục bị xoá.
 - Khi hai cửa sổ sửa cùng lúc, API chặn ghi đè bản mới hơn.
