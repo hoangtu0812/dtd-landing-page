@@ -76,3 +76,15 @@ Danh mục kiến trúc độc lập với danh mục ứng dụng giới thiệ
 Cấu hình lưu trong trường `architecture` của `dist/site-config.json`, cùng chức năng xuất/nhập/sao lưu hiện có. Cấu hình cũ chưa có trường này vẫn nhập được và bắt đầu với kiến trúc trống. Giới hạn: 12 tầng, 80 hệ thống, 200 kết nối liên hệ thống; mỗi hệ thống tối đa 40 thành phần và 80 kết nối nội bộ. Trang admin và mã trình sửa chỉ được phục vụ sau đăng nhập local, không nằm trong bản static đã xuất bản.
 
 Kiểm tra: `node --test tests/config.test.mjs tests/architecture.test.mjs`.
+
+
+### Icon và logo trong kiến trúc
+
+Trong **06 · Kiến trúc hệ thống → Ứng dụng & thành phần**, mỗi hệ thống và thành phần có mục **Biểu tượng / logo**:
+
+- Mở **Chọn icon công nghệ** để chọn một trong 24 icon: Frontend, Backend, Database, API Gateway, Proxy, API, Integration, Server, Cloud, Storage, Network, Mobile, BI, AI, Queue, Cache, Security/IAM, Monitoring, Container, ERP, Workflow, Industrial/IoT, Documents và Application. Chế độ Tự động chọn theo tên/vai trò.
+- **Tải logo lên** để dùng ảnh SAP, PI Vision hoặc logo hệ thống do quản trị viên cung cấp. Hỗ trợ PNG, JPG, WebP tối đa 5 MB; ảnh được tối ưu về tối đa 240 × 160 px, giữ tỷ lệ và độ trong suốt. Logo hiển thị trên thẻ, bảng thông tin và cửa sổ chi tiết.
+- Logo được ưu tiên khi có ảnh. **Xoá logo** để trở lại icon đã chọn. Logo và icon của từng thành phần cấu hình độc lập.
+- **Xem thử bản nháp**, sau đó **Lưu cấu hình**. Ảnh đi cùng tệp cấu hình khi xuất/nhập và được giữ lại sau khi tải trang. Cấu hình cũ không có icon/logo vẫn hoạt động.
+
+Các logo sản phẩm không được tự suy đoán từ tên hệ thống; dùng tệp nhận diện đúng của đơn vị. Giới hạn logo sau tối ưu: 200.000 ký tự mỗi ảnh và 4 MB tổng dữ liệu logo trong kiến trúc.

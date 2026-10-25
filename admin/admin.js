@@ -2,7 +2,7 @@ import {createArchitectureEditor} from '/admin/assets/architecture-editor.js';
 import {loadConfig,validateConfig,clone} from '/data-model.mjs';
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let draft,mode,revision,dirty=false,pendingDelete=null,avatarJobs=0,architectureEditor;
+let draft,mode,revision,dirty=false,pendingDelete=null,avatarJobs=0,architectureJobs=0,architectureEditor;
 const labels={people:'Nhân sự / nhóm',missions:'Nhiệm vụ',applications:'Ứng dụng',digitalRoadmap:'Mốc chuyển đổi số',applicationRoadmap:'Mốc ứng dụng'};
 const schemas={
   missions:[['title','Tên nhiệm vụ',180],['description','Mô tả nhiệm vụ',2000,'textarea']],
@@ -30,7 +30,7 @@ function renderList(key){
     return open+'<div class="avatar-editor">'+(row.avatar?'<img src="'+esc(row.avatar)+'" alt="Avatar '+esc(row.name)+'">':'<span class="avatar-fallback" aria-label="Chưa có ảnh">♙</span>')+'<div class="avatar-controls"><label class="secondary import-label">'+(row.avatar?'Thay ảnh':'Thêm avatar')+'<input type="file" data-avatar accept="image/jpeg,image/png,image/webp" aria-label="Chọn avatar cho '+esc(row.name||'mục mới')+'"></label>'+(row.avatar?'<button type="button" class="text-button" data-remove-avatar>Xoá ảnh</button>':'')+'<small>JPG, PNG, WebP · Tối đa 5 MB · Ảnh được thu nhỏ khi lưu</small></div></div><div class="fields-grid"><label>Loại mục<select data-field="type"><option value="person"'+(row.type==='person'?' selected':'')+'>Nhân sự</option><option value="team"'+(row.type==='team'?' selected':'')+'>Nhóm / bộ phận</option></select></label>'+field('name','Họ tên / Tên nhóm',row.name,150,'text',true)+field('title','Chức danh / Vai trò',row.title,160)+'<label>Trực thuộc<select data-field="parentId">'+parentOptions(row)+'</select></label>'+field('description','Mô tả / Phụ trách',row.description,1200,'textarea')+'</div></article>';
   }).join('');
 }
-function render(){document.querySelectorAll('[data-org]').forEach(input=>{input.value=draft.organization[input.dataset.org];});Object.keys(labels).forEach(renderList);architectureEditor?.destroy();architectureEditor=createArchitectureEditor($('#architecture-editor'),{getValue:()=>draft.architecture,onChange:markDirty,onMessage:message});}
+function render(){document.querySelectorAll('[data-org]').forEach(input=>{input.value=draft.organization[input.dataset.org];});Object.keys(labels).forEach(renderList);architectureEditor?.destroy();architectureEditor=createArchitectureEditor($('#architecture-editor'),{getValue:()=>draft.architecture,onChange:markDirty,onMessage:message,onBusy:delta=>{architectureJobs+=delta;$('#save-config').disabled=avatarJobs+architectureJobs>0;}});}
 function refreshParents(){document.querySelectorAll('[data-list="people"]').forEach(card=>{const person=draft.people[Number(card.dataset.index)];card.querySelector('[data-field="parentId"]').innerHTML=parentOptions(person);});}
 $('#config-form').addEventListener('input',event=>{
   const target=event.target;if(target.dataset.org){draft.organization[target.dataset.org]=target.value;markDirty();return;}
@@ -60,10 +60,10 @@ async function resizeAvatar(file){
 $('#people-list').addEventListener('change',async event=>{
   if(!event.target.matches('[data-avatar]'))return;const file=event.target.files[0];if(!file)return;
   const id=draft.people[Number(event.target.closest('[data-index]').dataset.index)].id;avatarJobs++;$('#save-config').disabled=true;message('Đang xử lý ảnh…');
-  try{const avatar=await resizeAvatar(file);const person=draft.people.find(p=>p.id===id);if(person){person.avatar=avatar;renderList('people');markDirty();}}catch(error){message(error.message||'Không đọc được tệp ảnh.','error');}finally{avatarJobs--;$('#save-config').disabled=avatarJobs>0;}
+  try{const avatar=await resizeAvatar(file);const person=draft.people.find(p=>p.id===id);if(person){person.avatar=avatar;renderList('people');markDirty();}}catch(error){message(error.message||'Không đọc được tệp ảnh.','error');}finally{avatarJobs--;$('#save-config').disabled=avatarJobs+architectureJobs>0;}
 });
 $('#config-form').addEventListener('submit',async event=>{
-  event.preventDefault();if(avatarJobs){message('Vui lòng đợi xử lý ảnh hoàn tất.','error');return;}const save=$('#save-config');save.disabled=true;
+  event.preventDefault();if(avatarJobs+architectureJobs){message('Vui lòng đợi xử lý ảnh hoàn tất.','error');return;}const save=$('#save-config');save.disabled=true;
   try{
     const config=validateConfig(draft);
     if(mode==='file'){const response=await fetch('/api/config',{method:'PUT',headers:{'Content-Type':'application/json','If-Match':revision},body:JSON.stringify(config)});const data=await response.json();if(!response.ok)throw new Error(data.error||'Không lưu được cấu hình.');revision=data.revision;}
@@ -72,8 +72,8 @@ $('#config-form').addEventListener('submit',async event=>{
   }catch(error){message(error.name==='QuotaExceededError'?'Bộ nhớ trình duyệt đã đầy. Hãy xuất cấu hình để giữ lại dữ liệu và giảm số ảnh.':error.message,'error');}finally{save.disabled=false;}
 });
 function downloadConfig(config){const url=URL.createObjectURL(new Blob([JSON.stringify(config,null,2)+'\n'],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='site-config.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-$('#export-config').addEventListener('click',()=>{if(!draft)return;try{downloadConfig(validateConfig(draft));message('Đã xuất cấu hình hiện tại. Nếu có chỉnh sửa chưa lưu, hãy bấm Lưu cấu hình.','success');}catch(error){message(error.message,'error');}});
-$('#import-config').addEventListener('change',async event=>{const file=event.target.files[0];if(!file)return;try{if(file.size>8*1024*1024)throw new Error('Tệp cấu hình không được vượt quá 8 MB.');const config=validateConfig(JSON.parse(await file.text()));draft=clone(config);render();markDirty();message('Đã nhập vào biểu mẫu. Kiểm tra thông tin rồi bấm Lưu cấu hình để áp dụng.');}catch(error){message('Không nhập được cấu hình: '+error.message,'error');}finally{event.target.value='';}});
+$('#export-config').addEventListener('click',()=>{if(!draft)return;if(avatarJobs+architectureJobs){message('Vui lòng đợi xử lý ảnh hoàn tất.','error');return;}try{downloadConfig(validateConfig(draft));message('Đã xuất cấu hình hiện tại. Nếu có chỉnh sửa chưa lưu, hãy bấm Lưu cấu hình.','success');}catch(error){message(error.message,'error');}});
+$('#import-config').addEventListener('change',async event=>{const file=event.target.files[0];if(!file)return;try{if(avatarJobs+architectureJobs)throw new Error('Vui lòng đợi xử lý ảnh hoàn tất.');if(file.size>8*1024*1024)throw new Error('Tệp cấu hình không được vượt quá 8 MB.');const config=validateConfig(JSON.parse(await file.text()));draft=clone(config);render();markDirty();message('Đã nhập vào biểu mẫu. Kiểm tra thông tin rồi bấm Lưu cấu hình để áp dụng.');}catch(error){message('Không nhập được cấu hình: '+error.message,'error');}finally{event.target.value='';}});
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
 try{const session=await fetch('/api/admin-session',{cache:'no-store'});if(!session.ok)throw new Error('Vui lòng đăng nhập lại tại /admin.');const loaded=await loadConfig();if(loaded.mode!=='file')throw new Error('Máy chủ local chưa sẵn sàng.');draft=clone(loaded.config);mode=loaded.mode;revision=loaded.revision;render();$('#editor-fields').disabled=false;$('#save-config').disabled=false;$('#save-state').textContent='Đã tải cấu hình';$('#storage-note').textContent=mode==='file'?'Lưu trên máy: các thay đổi sẽ được ghi vào tệp site-config.json khi bấm Lưu cấu hình. Dữ liệu được giữ lại sau khi đóng trình duyệt hoặc khởi động lại máy chủ.':'Lưu trên trình duyệt: các thay đổi chỉ áp dụng trên thiết bị và trình duyệt này. Dùng Xuất/Nhập cấu hình để chuyển dữ liệu. Muốn cập nhật bản online cho mọi người, cần xuất cấu hình và triển khai lại website.';}catch(error){message(error.message,'error');$('#storage-note').textContent='Không tải được cấu hình. Hãy tải lại trang hoặc kiểm tra kết nối.';$('#save-state').textContent='Chưa tải được dữ liệu';}
 

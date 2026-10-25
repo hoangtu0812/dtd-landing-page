@@ -69,7 +69,7 @@ export function createPreviewServer({root=defaultRoot,adminRoot=defaultAdminRoot
       }
       if(normalizedPath.startsWith('/admin/')){
         if(!authenticated){json(401,{error:'Cần đăng nhập quản trị.'});return;}
-        const assets={'/admin/assets/admin.js':'admin.js','/admin/assets/admin.css':'admin.css','/admin/assets/architecture-editor.js':'architecture-editor.js'};
+        const assets={'/admin/assets/admin.js':'admin.js','/admin/assets/admin.css':'admin.css','/admin/assets/architecture-editor.js':'architecture-editor.js','/admin/assets/logo-upload.js':'logo-upload.js'};
         if(!['GET','HEAD'].includes(req.method)||!assets[normalizedPath]){json(404,{error:'Không tìm thấy tệp.'});return;}
         const file=path.join(adminRoot,assets[normalizedPath]);const data=await readFile(file);
         res.writeHead(200,{'Content-Type':types[path.extname(file)]});res.end(req.method==='HEAD'?undefined:data);return;
