@@ -3,3 +3,6 @@ node_modules/
 *.tar.gz
 *.zip
 .preview/
+
+.site-config.backup.json
+dist/site-config.json.*.tmp

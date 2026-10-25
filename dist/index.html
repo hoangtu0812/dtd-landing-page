@@ -4,20 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#071c35">
-  <meta name="description" content="Phòng Chuyển đổi số — Ban Công nghệ thông tin và Chuyển đổi số, BSR. Kết nối công nghệ, dữ liệu và con người. Bản giới thiệu với nội dung đề xuất.">
+  <meta name="description" content="Phòng Chuyển đổi số — Ban Công nghệ thông tin và Chuyển đổi số, BSR. Kết nối công nghệ, dữ liệu và con người. Thông tin tổ chức và hoạt động của phòng.">
   <title>BSR Digital · Phòng Chuyển đổi số</title>
   <link rel="stylesheet" href="./styles.css">
-  <script src="./app.js" defer></script>
+  <script src="./app.js" type="module"></script>
+  <link rel="icon" href="./logoBSR.png" type="image/png">
+  <link rel="stylesheet" href="./brand.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Đi đến nội dung</a>
   <header class="header">
-    <a class="brand" href="#home" aria-label="BSR Digital — Trang chủ"><span class="brand-symbol">BSR<span></span></span><span class="brand-divider"></span><span class="brand-name">DIGITAL<span>CHUYỂN ĐỔI SỐ</span></span></a>
+    <a class="brand" href="#home" aria-label="BSR Digital — Trang chủ"><img class="brand-logo" src="./logoBSR.png" alt="Petrovietnam BSR" width="64" height="66"><span class="brand-divider"></span><span class="brand-name">DIGITAL<span>CHUYỂN ĐỔI SỐ</span></span></a>
     <button class="menu-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="navigation"><span></span><span></span><span></span></button>
     <nav id="navigation" aria-label="Điều hướng chính">
       <a href="#about">Giới thiệu</a><a href="#organization">Tổ chức</a><a href="#missions">Chức năng</a><a href="#applications">Ứng dụng</a><a href="#roadmap">Lộ trình</a>
     </nav>
-    <a class="header-cta" href="#applications">Khám phá giải pháp <span>↗</span></a>
+    <a class="header-cta" href="./admin.html">Cấu hình nội dung <span>⚙</span></a>
   </header>
   <main id="main">
     <section class="hero" id="home">
@@ -59,52 +61,32 @@
       <div class="hero-bottom wrap"><span>ĐỒNG HÀNH CÙNG BSR TRONG HÀNH TRÌNH SỐ</span><a href="#about">Cuộn để khám phá <span>↓</span></a></div>
     </section>
     <div class="pillars"><div class="wrap pillars-inner"><span><i>01</i> Chiến lược số</span><span><i>02</i> Dữ liệu & trí tuệ</span><span><i>03</i> Giải pháp công nghệ</span><span><i>04</i> Con người & đổi mới</span></div></div>
-    <section class="section wrap about" id="about">
-      <div><div class="eyebrow">01 / VỀ CHÚNG TÔI</div><h2>Công nghệ là nền tảng.<br><span>Chuyển đổi là hành trình.</span></h2></div>
-      <div class="about-copy"><p>Phòng Chuyển đổi số hướng đến vai trò kết nối nhu cầu nghiệp vụ với sức mạnh công nghệ, đồng hành cùng các đơn vị trong hành trình xây dựng BSR số.</p><p class="muted">Lấy con người làm trung tâm, dữ liệu làm nền tảng và hiệu quả làm thước đo — từ số hoá quy trình đến hình thành những cách làm việc mới.</p><div class="inline-note"><span>i</span> Bản giới thiệu mẫu · Nội dung chức năng, ứng dụng và lộ trình là đề xuất.</div></div>
-    </section>
+    <section class="section wrap about" id="about"><div><div class="eyebrow">01 / VỀ CHÚNG TÔI</div><h2>Công nghệ là nền tảng.<br><span>Chuyển đổi là hành trình.</span></h2></div><div class="about-copy" id="about-content"></div></section>
     <section class="section soft" id="organization">
       <div class="wrap">
-        <div class="section-heading"><div><div class="eyebrow">02 / ĐỘI NGŨ & TỔ CHỨC</div><h2>Chung tầm nhìn. <span>Cùng kiến tạo.</span></h2></div><span class="outline-label">Cơ cấu minh hoạ</span></div>
+        <div class="section-heading"><div><div class="eyebrow">02 / ĐỘI NGŨ & TỔ CHỨC</div><h2>Chung tầm nhìn. <span>Cùng kiến tạo.</span></h2></div><a class="outline-label" href="./admin.html#people">Cấu hình sơ đồ ↗</a></div>
         <p class="section-lead">Kết nối chuyên môn, phối hợp xuyên suốt từ chiến lược đến triển khai.</p>
-        <div class="org-chart">
-          <div class="org-parent"><span>ĐƠN VỊ CHỦ QUẢN</span><strong>Ban Công nghệ thông tin và Chuyển đổi số</strong></div>
-          <div class="org-stem"></div>
-          <div class="leader-card">
-            <label class="avatar-control" for="leader-avatar"><span id="avatar-placeholder"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="17" r="8"/><path d="M9 41v-3a15 15 0 0 1 30 0v3"/></svg></span><img id="avatar-preview" alt="Ảnh đại diện anh Lê Xuân Hiển" hidden><span class="avatar-plus">+</span><input type="file" id="leader-avatar" accept="image/jpeg,image/png,image/webp" aria-label="Thêm ảnh đại diện Trưởng phòng"></label>
-            <div><span class="role-label">TRƯỞNG PHÒNG</span><h3>Lê Xuân Hiển</h3><p>Phòng Chuyển đổi số</p><button class="text-button" id="avatar-trigger" type="button">Thêm ảnh đại diện ↗</button><button class="text-button" id="avatar-remove" type="button" hidden>Xoá ảnh</button></div>
-            <span class="leader-mark">DX</span>
-          </div>
-          <p class="avatar-note" id="avatar-status" aria-live="polite">Có thể thêm avatar để xem thử trên thiết bị này.</p>
-          <div class="org-branches"><div class="team-card"><span class="team-number">01</span><h3>Chiến lược & quản trị số</h3><p>Định hướng, kiến trúc và quản trị danh mục sáng kiến.</p><span class="team-tag">Nhóm chuyên môn đề xuất</span></div><div class="team-card"><span class="team-number">02</span><h3>Phát triển giải pháp số</h3><p>Phân tích, xây dựng và tích hợp các ứng dụng nghiệp vụ.</p><span class="team-tag">Nhóm chuyên môn đề xuất</span></div><div class="team-card"><span class="team-number">03</span><h3>Dữ liệu & đổi mới sáng tạo</h3><p>Khai thác dữ liệu, nghiên cứu AI và thúc đẩy đổi mới.</p><span class="team-tag">Nhóm chuyên môn đề xuất</span></div></div>
-        </div>
+        <div class="org-chart" id="org-chart" aria-label="Sơ đồ tổ chức"></div>
       </div>
     </section>
     <section class="section wrap" id="missions">
-      <div class="section-heading"><div><div class="eyebrow">03 / CHỨC NĂNG & NHIỆM VỤ</div><h2>Từ định hướng <span>đến thực thi.</span></h2></div><p class="heading-aside">Sáu nhóm nhiệm vụ đề xuất,<br>một mục tiêu tạo giá trị bền vững.</p></div>
-      <div class="missions-grid">
-        <article class="mission"><span class="mission-icon">⌁</span><span class="mission-number">01</span><h3>Hoạch định chiến lược số</h3><p>Đề xuất chiến lược, xây dựng kế hoạch và theo dõi danh mục chương trình chuyển đổi số.</p></article>
-        <article class="mission"><span class="mission-icon">▦</span><span class="mission-number">02</span><h3>Số hoá quy trình nghiệp vụ</h3><p>Phối hợp cùng các đơn vị rà soát quy trình, chuẩn hoá nghiệp vụ và tìm cơ hội tự động hoá.</p></article>
-        <article class="mission"><span class="mission-icon">⌘</span><span class="mission-number">03</span><h3>Phát triển & tích hợp ứng dụng</h3><p>Xây dựng giải pháp phù hợp với nhu cầu thực tiễn, hướng đến hệ sinh thái ứng dụng kết nối.</p></article>
-        <article class="mission"><span class="mission-icon">◈</span><span class="mission-number">04</span><h3>Quản trị & khai thác dữ liệu</h3><p>Đề xuất chuẩn dữ liệu, phát triển báo cáo phân tích và hỗ trợ ra quyết định dựa trên dữ liệu.</p></article>
-        <article class="mission"><span class="mission-icon">✦</span><span class="mission-number">05</span><h3>Nghiên cứu & ứng dụng AI</h3><p>Khảo sát công nghệ mới, thử nghiệm các bài toán AI và đánh giá khả năng áp dụng vào nghiệp vụ.</p></article>
-        <article class="mission"><span class="mission-icon">↗</span><span class="mission-number">06</span><h3>Phát triển văn hoá số</h3><p>Đồng hành, đào tạo kỹ năng và hỗ trợ các đơn vị làm chủ công cụ, phương thức làm việc số.</p></article>
-      </div>
+      <div class="section-heading"><div><div class="eyebrow">03 / CHỨC NĂNG & NHIỆM VỤ</div><h2>Từ định hướng <span>đến thực thi.</span></h2></div><p class="heading-aside">Chức năng và nhiệm vụ của phòng.</p></div>
+      <div class="missions-grid" id="missions-grid"></div>
     </section>
     <section class="section soft" id="applications"><div class="wrap">
-      <div class="section-heading"><div><div class="eyebrow">04 / HỆ SINH THÁI ỨNG DỤNG</div><h2>Giải pháp thiết thực.<br><span>Giá trị mỗi ngày.</span></h2></div><p class="heading-aside">Danh mục minh hoạ các ứng dụng<br>có thể xây dựng và cung cấp.</p></div>
-      <div class="app-toolbar"><div class="filter-group" role="group" aria-label="Lọc ứng dụng"><button class="filter active" data-filter="all" aria-pressed="true">Tất cả <span>6</span></button><button class="filter" data-filter="office" aria-pressed="false">Quản trị & điều hành</button><button class="filter" data-filter="data" aria-pressed="false">Dữ liệu & AI</button><button class="filter" data-filter="operations" aria-pressed="false">Vận hành</button></div><span class="demo-label"><span></span> Danh mục đề xuất</span></div>
+      <div class="section-heading"><div><div class="eyebrow">04 / HỆ SINH THÁI ỨNG DỤNG</div><h2>Giải pháp thiết thực.<br><span>Giá trị mỗi ngày.</span></h2></div><p class="heading-aside">Các ứng dụng và giải pháp<br>do phòng xây dựng, cung cấp.</p></div>
+      <div class="app-toolbar"><div class="filter-group" id="app-filters" role="group" aria-label="Lọc ứng dụng"></div></div>
       <div class="apps-grid" id="apps-grid"></div><p id="filter-status" class="sr-only" aria-live="polite"></p>
     </div></section>
     <section class="section roadmap-section" id="roadmap"><div class="wrap">
-      <div class="section-heading"><div><div class="eyebrow light">05 / TẦM NHÌN & LỘ TRÌNH</div><h2>Từng bước chuyển đổi.<br><span>Mở rộng tương lai.</span></h2></div><div class="roadmap-note">Lộ trình minh hoạ 2026–2030<br>Điều chỉnh theo chiến lược và nguồn lực thực tế.</div></div>
+      <div class="section-heading"><div><div class="eyebrow light">05 / TẦM NHÌN & LỘ TRÌNH</div><h2>Từng bước chuyển đổi.<br><span>Mở rộng tương lai.</span></h2></div><div class="roadmap-note">Lộ trình chuyển đổi số và<br>kế hoạch triển khai ứng dụng.</div></div>
       <div class="roadmap-tabs" role="tablist" aria-label="Lộ trình"><button role="tab" id="tab-digital" aria-selected="true" aria-controls="roadmap-panel" data-roadmap="digital">Chuyển đổi số <span>↗</span></button><button role="tab" id="tab-apps" aria-selected="false" aria-controls="roadmap-panel" data-roadmap="apps" tabindex="-1">Triển khai ứng dụng <span>↗</span></button></div>
       <div id="roadmap-panel" role="tabpanel" aria-labelledby="tab-digital" tabindex="0"></div>
-      <div class="roadmap-bottom"><span class="live-dot"></span><p>Nguyên tắc xuyên suốt: <strong>Thí điểm → Đánh giá → Hoàn thiện → Nhân rộng</strong></p><span>ĐỀ XUẤT / V1.0</span></div>
+      <div class="roadmap-bottom"><span class="live-dot"></span><p>Nguyên tắc xuyên suốt: <strong>Thí điểm → Đánh giá → Hoàn thiện → Nhân rộng</strong></p><a href="./admin.html#roadmaps">Cấu hình lộ trình ↗</a></div>
     </div></section>
     <section class="closing wrap"><div class="closing-icon">↗</div><div><div class="eyebrow">CÙNG NHAU KIẾN TẠO</div><h2>Mỗi ý tưởng. Một bước tiến số.</h2><p>Đồng hành cùng các đơn vị, đưa công nghệ đến gần hơn với công việc mỗi ngày.</p></div><a class="button dark" href="#organization">Gặp gỡ đội ngũ <span>↗</span></a></section>
   </main>
-  <footer><div class="wrap footer-main"><a class="brand" href="#home"><span class="brand-symbol">BSR<span></span></span><span class="brand-divider"></span><span class="brand-name">DIGITAL<span>CHUYỂN ĐỔI SỐ</span></span></a><p>Phòng Chuyển đổi số<br>Ban Công nghệ thông tin và Chuyển đổi số<br>Tổng Công ty Lọc hoá dầu Việt Nam BSR</p><a href="#home">Về đầu trang ↑</a></div><div class="wrap footer-bottom"><span>© 2026 BSR Digital · Bản thiết kế giới thiệu</span><span>Nội dung mẫu phục vụ thảo luận, chưa phải thông tin công bố chính thức.</span></div></footer>
-  <dialog id="app-dialog"><button class="dialog-close" aria-label="Đóng chi tiết">×</button><span class="eyebrow">GIẢI PHÁP ĐỀ XUẤT</span><div id="dialog-content"></div><button class="button dark dialog-done">Đã hiểu <span>✓</span></button></dialog>
+  <footer><div class="wrap footer-main"><a class="brand" href="#home"><img class="brand-logo" src="./logoBSR.png" alt="Petrovietnam BSR" width="64" height="66"><span class="brand-divider"></span><span class="brand-name">DIGITAL<span>CHUYỂN ĐỔI SỐ</span></span></a><p>Phòng Chuyển đổi số<br>Ban Công nghệ thông tin và Chuyển đổi số<br>Tổng Công ty Lọc hoá dầu Việt Nam BSR</p><a href="#home">Về đầu trang ↑</a></div><div class="wrap footer-bottom"><span>© 2026 BSR Digital</span><span><a href="./admin.html">Quản lý nội dung & sơ đồ tổ chức ↗</a></span></div></footer>
+  <dialog id="app-dialog"><button class="dialog-close" aria-label="Đóng chi tiết">×</button><span class="eyebrow">THÔNG TIN ỨNG DỤNG</span><div id="dialog-content"></div><button class="button dark dialog-done">Đã hiểu <span>✓</span></button></dialog>
 </body>
 </html>

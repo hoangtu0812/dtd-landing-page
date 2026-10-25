@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "organization": {
+    "department": "Phòng Chuyển đổi số",
+    "parent": "Ban Công nghệ thông tin và Chuyển đổi số",
+    "company": "Tổng Công ty Lọc hoá dầu Việt Nam BSR",
+    "introduction": ""
+  },
+  "people": [
+    {
+      "id": "le-xuan-hien",
+      "name": "Lê Xuân Hiển",
+      "title": "Trưởng phòng",
+      "type": "person",
+      "parentId": "",
+      "description": "",
+      "avatar": ""
+    }
+  ],
+  "missions": [],
+  "applications": [],
+  "digitalRoadmap": [],
+  "applicationRoadmap": []
+}
