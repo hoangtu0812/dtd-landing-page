@@ -32,7 +32,6 @@ export const storageKey='bsr-site-config-v2';
 export async function loadConfig(){
   const localHost=['127.0.0.1','localhost','[::1]'].includes(location.hostname);
   if(localHost){try{const r=await fetch('/api/config',{cache:'no-store'});if(r.ok){const data=await r.json();return {config:validateConfig(data.config),revision:data.revision,mode:'file'};}}catch{}}
-  try{const saved=localStorage.getItem(storageKey);if(saved)return {config:validateConfig(JSON.parse(saved)),revision:null,mode:'browser'};}catch{}
   const response=await fetch('./site-config.json',{cache:'no-store'});if(!response.ok)throw new Error('Không tải được cấu hình. Hãy chạy trang bằng node preview.mjs hoặc kiểm tra kết nối.');
   return {config:validateConfig(await response.json()),revision:null,mode:'browser'};
 }

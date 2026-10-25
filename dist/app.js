@@ -1,7 +1,7 @@
 import {loadConfig,safeUrl} from './data-model.mjs';
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const empty=(label,anchor)=>'<div class="empty-state"><span class="empty-symbol">◇</span><h3>Chưa cập nhật '+label+'</h3><p>Nội dung sẽ xuất hiện tại đây sau khi được cấu hình.</p><a href="./admin.html#'+anchor+'">Cập nhật nội dung ↗</a></div>';
+const empty=(label,anchor)=>'<div class="empty-state"><span class="empty-symbol">◇</span><h3>Chưa cập nhật '+label+'</h3><p>Thông tin sẽ được cập nhật.</p></div>';
 let config;
 function renderOrganization(){
   const {organization,people}=config;

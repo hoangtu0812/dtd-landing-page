@@ -6,3 +6,5 @@ node_modules/
 
 .site-config.backup.json
 dist/site-config.json.*.tmp
+
+.local/
