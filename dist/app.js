@@ -5,13 +5,20 @@ const empty=(label,anchor)=>'<div class="empty-state"><span class="empty-symbol"
 let config;
 function renderOrganization(){
   const {organization,people}=config;
-  function node(person){
-    const children=people.filter(p=>p.parentId===person.id);
-    const initials=person.name.trim().split(/\s+/).map(w=>w[0]).slice(-2).join('').toUpperCase();
-    const avatar=person.avatar?'<img class="org-avatar" src="'+esc(person.avatar)+'" alt="Ảnh '+esc(person.name)+'">':'<div class="org-avatar org-initials" aria-hidden="true">'+(person.type==='team'?'▦':esc(initials))+'</div>';
-    return '<li><article class="org-node '+(person.type==='team'?'org-team':'')+'">'+avatar+'<div><span class="role-label">'+esc(person.title||(person.type==='team'?'Nhóm / bộ phận':'Nhân sự'))+'</span><h3>'+esc(person.name)+'</h3>'+(person.description?'<p>'+esc(person.description)+'</p>':'')+'</div></article>'+(children.length?'<ul>'+children.map(node).join('')+'</ul>':'')+'</li>';
+  const teamIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5"/></svg>';
+  function list(rows,depth=0){
+    // Keep wide or nested hierarchies readable without squeezing cards.
+    const stacked=depth>1||rows.length>3||rows.some(p=>people.some(c=>c.parentId===p.id))&&rows.length>1;
+    return '<ul class="org-list'+(stacked?' org-list--stack':'')+'">'+rows.map((person,index)=>node(person,depth,index)).join('')+'</ul>';
   }
-  $('#org-chart').innerHTML=(organization.parent?'<div class="org-parent"><span>ĐƠN VỊ CHỦ QUẢN</span><strong>'+esc(organization.parent)+'</strong></div><div class="org-stem"></div>':'')+'<div class="org-department">'+esc(organization.department)+'</div>'+(people.length?'<ul class="org-tree">'+people.filter(p=>!p.parentId).map(node).join('')+'</ul>':empty('sơ đồ tổ chức','people'));
+  function node(person,depth,index){
+    const children=people.filter(p=>p.parentId===person.id);
+    const isTeam=person.type==='team';
+    const initials=person.name.trim().split(/\s+/).map(w=>w[0]).slice(-2).join('').toUpperCase();
+    const avatar=person.avatar?'<img class="org-portrait" src="'+esc(person.avatar)+'" alt="Ảnh '+esc(person.name)+'" loading="lazy">':'<span class="org-portrait org-placeholder" aria-hidden="true">'+(isTeam?teamIcon:esc(initials))+'</span>';
+    return '<li class="org-item"><article class="org-card '+(isTeam?'org-card--team':depth===0?'org-card--lead':'org-card--person')+'">'+avatar+'<div class="org-card-copy"><span class="org-role">'+esc(person.title||(isTeam?'Nhóm / bộ phận':'Nhân sự'))+'</span><h3>'+esc(person.name)+'</h3>'+(person.description?'<p>'+esc(person.description)+'</p>':'')+'</div>'+(isTeam?'<span class="org-index" aria-hidden="true">'+String(index+1).padStart(2,'0')+'</span>':'')+'</article>'+(children.length?list(children,depth+1):'')+'</li>';
+  }
+  $('#org-chart').innerHTML='<div class="org-context">'+(organization.parent?'<div class="org-governing"><span class="org-kicker">ĐƠN VỊ CHỦ QUẢN</span><strong>'+esc(organization.parent)+'</strong></div>':'')+'<div class="org-unit"><span aria-hidden="true"></span><h3>'+esc(organization.department)+'</h3></div></div>'+(people.length?list(people.filter(p=>!p.parentId)):empty('sơ đồ tổ chức','people'));
 }
 function renderApplications(){
   const categories=[...new Set(config.applications.map(a=>a.category).filter(Boolean))];

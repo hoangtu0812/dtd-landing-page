@@ -99,5 +99,23 @@ export function createPreviewServer({root=defaultRoot,adminRoot=defaultAdminRoot
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const port=Number(process.env.BSR_PREVIEW_PORT||4173);
-  createPreviewServer().listen(port,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:'+port+'\nQuản trị (yêu cầu đăng nhập): http://127.0.0.1:'+port+'/admin'));
+  const url='http://127.0.0.1:'+port;
+  const server=createPreviewServer();
+  server.on('error',async error=>{
+    if(error.code==='EADDRINUSE'){
+      let existingBSR=false;
+      try{
+        const response=await fetch(url,{signal:AbortSignal.timeout(2000)});
+        const page=await response.text();
+        existingBSR=response.ok&&page.includes('BSR Digital')&&page.includes('id="org-chart"');
+      }catch{}
+      if(existingBSR){
+        console.log('BSR đã chạy trên cổng '+port+'. Không cần khởi động thêm.\nTrang giới thiệu: '+url+'\nQuản trị: '+url+'/admin');
+        return;
+      }
+      console.error('Cổng '+port+' đang được một tiến trình khác sử dụng. Hãy chọn cổng khác bằng biến BSR_PREVIEW_PORT hoặc dừng đúng tiến trình đang giữ cổng.');
+    }else console.error('Không thể khởi động máy chủ BSR: '+error.message);
+    process.exitCode=1;
+  });
+  server.listen(port,'127.0.0.1',()=>console.log('Local: '+url+'\nQuản trị (yêu cầu đăng nhập): '+url+'/admin'));
 }
