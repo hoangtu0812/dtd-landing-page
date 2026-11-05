@@ -49,6 +49,7 @@ Chỉnh sửa trên local, kiểm tra nội dung rồi triển khai lại Sites 
 ## Mã nguồn và kiểm tra
 
 - dist/: nội dung xuất bản, logo, màu sắc và giao diện người xem.
+- dist/theme.css: lớp giao diện nạp sau cùng (font Geist, khung lưới, nhãn mono); đổi giao diện tại đây.
 - admin/: biểu mẫu quản trị, xác thực mật khẩu; chỉ máy chủ local phục vụ sau đăng nhập.
 - setup-admin.mjs: thiết lập mật khẩu trực tiếp tại terminal.
 - preview.mjs: kiểm tra phiên, Origin, Host, xung đột trước khi ghi.
