@@ -39,6 +39,7 @@ function renderRoadmap(kind){
 }
 function render(){
   const architecture=config.architecture;$('#architecture').hidden=!architecture.enabled;$('#architecture-nav').hidden=!architecture.enabled;if(architecture.enabled)mountArchitecture($('#architecture-root'),architecture);
+  const noRoadmap=!config.digitalRoadmap.length&&!config.applicationRoadmap.length;$('#roadmap').hidden=noRoadmap;document.querySelectorAll('a[href="#roadmap"]').forEach(a=>{a.hidden=noRoadmap;});
   const org=config.organization;document.title='BSR Digital · '+org.department;
   $('.hero-intro').textContent=org.department;$('.hero-desc').replaceChildren(document.createTextNode(org.parent),document.createElement('br'),document.createTextNode(org.company));
   $('.footer-main p').replaceChildren(document.createTextNode(org.department),document.createElement('br'),document.createTextNode(org.parent),document.createElement('br'),document.createTextNode(org.company));

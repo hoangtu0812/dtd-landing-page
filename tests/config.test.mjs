@@ -75,7 +75,7 @@ test('authenticated save persists; stale and cross-origin writes blocked; logout
   assert.equal(await(await fetch(f.origin+'/admin/assets/architecture-editor.js',{headers:{Cookie:cookie}})).text(),'PRIVATE_ARCHITECTURE_EDITOR');
   assert.equal(await(await fetch(f.origin+'/admin/assets/logo-upload.js',{headers:{Cookie:cookie}})).text(),'PRIVATE_LOGO_UPLOAD');
   const initial=await(await fetch(f.origin+'/api/config')).json();const updated=clone(defaults);updated.organization.introduction='Persisted test content';
-  updated.architecture=JSON.parse(await readFile(new URL('../dist/site-config.json',import.meta.url),'utf8')).architecture;
+  updated.architecture=JSON.parse(await readFile(new URL('./fixtures/sample-site-config.json',import.meta.url),'utf8')).architecture;
   updated.architecture.systems[0].logo="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a4V8AAAAASUVORK5CYII=";
   updated.architecture.systems[0].icon='proxy';
   const save=(origin=f.origin,revision=initial.revision)=>fetch(f.origin+'/api/config',{method:'PUT',headers:{Origin:origin,Cookie:cookie,'Content-Type':'application/json','If-Match':revision},body:JSON.stringify(updated)});

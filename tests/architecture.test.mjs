@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {validateArchitecture,emptyArchitecture} from '../dist/architecture-model.mjs';
 import {validateConfig,defaults,clone} from '../dist/data-model.mjs';
-const sample=JSON.parse(await readFile(new URL('../dist/site-config.json',import.meta.url),'utf8'));
+const sample=JSON.parse(await readFile(new URL('./fixtures/sample-site-config.json',import.meta.url),'utf8'));
 test('architecture sample round trips all layers, systems, components and directed links',()=>{assert.deepEqual(validateArchitecture(sample.architecture),sample.architecture);assert.equal(validateConfig(sample).architecture.systems.length,sample.architecture.systems.length);});
 test('older configurations import with an empty architecture, not fabricated data',()=>{const old=clone(defaults);delete old.architecture;assert.deepEqual(validateConfig(old).architecture,emptyArchitecture());});
 test('architecture rejects orphan layers and cross-scope component connections',()=>{const a=clone(sample.architecture);a.systems[0].layerId='missing';assert.throws(()=>validateArchitecture(a),/tầng.*không tồn tại/);const b=clone(sample.architecture);b.systems[0].connections[0].target=b.systems[1].id;assert.throws(()=>validateArchitecture(b),/không tồn tại/);const c=clone(sample.architecture);c.connections[0].source='missing';assert.throws(()=>validateArchitecture(c),/không tồn tại/);});
