@@ -1,5 +1,6 @@
 import {createArchitectureEditor} from '/admin/assets/architecture-editor.js';
 import {loadConfig,validateConfig,clone} from '/data-model.mjs';
+import {prepareArchitectureLogo} from '/admin/assets/logo-upload.js';
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let draft,mode,revision,dirty=false,pendingDelete=null,avatarJobs=0,architectureJobs=0,architectureEditor;
@@ -26,7 +27,8 @@ function renderList(key){
   if(!draft[key].length){container.innerHTML='<p class="empty-editor">Chưa có nội dung. Bấm “Thêm” để bắt đầu.</p>';return;}
   container.innerHTML=draft[key].map((row,index)=>{
     const open='<article class="edit-card" data-list="'+key+'" data-index="'+index+'">'+header(key,index,row);
-    if(key!=='people')return open+'<div class="fields-grid">'+schemas[key].map(([name,label,max,type])=>field(name,label,row[name],max,type,name==='title')).join('')+'</div></article>';
+    const logoEditor=key!=='applications'?'':'<div class="avatar-editor">'+(row.logo?'<img src="'+esc(row.logo)+'" alt="Logo '+esc(row.title)+'" style="object-fit:contain;background:#fff">':'<span class="avatar-fallback" aria-label="Chưa có logo">⌘</span>')+'<div class="avatar-controls"><label class="secondary import-label">'+(row.logo?'Thay logo':'Thêm logo')+'<input type="file" data-app-logo accept="image/jpeg,image/png,image/webp" aria-label="Chọn logo cho '+esc(row.title||'ứng dụng mới')+'"></label>'+(row.logo?'<button type="button" class="text-button" data-remove-logo>Xoá logo</button>':'')+'<small>PNG, JPG, WebP · Tối đa 5 MB · Ảnh được thu nhỏ khi lưu</small></div></div>';
+    if(key!=='people')return open+logoEditor+'<div class="fields-grid">'+schemas[key].map(([name,label,max,type])=>field(name,label,row[name],max,type,name==='title')).join('')+'</div></article>';
     return open+'<div class="avatar-editor">'+(row.avatar?'<img src="'+esc(row.avatar)+'" alt="Avatar '+esc(row.name)+'">':'<span class="avatar-fallback" aria-label="Chưa có ảnh">♙</span>')+'<div class="avatar-controls"><label class="secondary import-label">'+(row.avatar?'Thay ảnh':'Thêm avatar')+'<input type="file" data-avatar accept="image/jpeg,image/png,image/webp" aria-label="Chọn avatar cho '+esc(row.name||'mục mới')+'"></label>'+(row.avatar?'<button type="button" class="text-button" data-remove-avatar>Xoá ảnh</button>':'')+'<small>JPG, PNG, WebP · Tối đa 5 MB · Ảnh được thu nhỏ khi lưu</small></div></div><div class="fields-grid"><label>Loại mục<select data-field="type"><option value="person"'+(row.type==='person'?' selected':'')+'>Nhân sự</option><option value="team"'+(row.type==='team'?' selected':'')+'>Nhóm / bộ phận</option></select></label>'+field('name','Họ tên / Tên nhóm',row.name,150,'text',true)+field('title','Chức danh / Vai trò',row.title,160)+'<label>Trực thuộc<select data-field="parentId">'+parentOptions(row)+'</select></label>'+field('description','Mô tả / Phụ trách',row.description,1200,'textarea')+'</div></article>';
   }).join('');
 }
@@ -50,6 +52,7 @@ $('#config-form').addEventListener('click',event=>{
   if(event.target.closest('[data-delete]')){pendingDelete={key,index};$('#delete-description').textContent='Xoá “'+(row.name||row.title||labels[key])+'”'+(key==='people'&&draft.people.some(p=>p.parentId===row.id)?'. Các mục trực thuộc sẽ được chuyển lên cấp trên của mục này.':'.');$('#delete-dialog').showModal();}
   const move=event.target.closest('[data-move]');if(move){const next=index+Number(move.dataset.move);if(next>=0&&next<draft[key].length){[draft[key][index],draft[key][next]]=[draft[key][next],draft[key][index]];renderList(key);markDirty();$('#'+key+'-list').children[next].querySelector('.icon-button:not(:disabled)').focus();}}
   if(event.target.closest('[data-remove-avatar]')){row.avatar='';renderList('people');markDirty();}
+  if(event.target.closest('[data-remove-logo]')){row.logo='';renderList('applications');markDirty();}
 });
 $('#cancel-delete').addEventListener('click',()=>{$('#delete-dialog').close();pendingDelete=null;});
 $('#confirm-delete').addEventListener('click',()=>{if(!pendingDelete)return;const {key,index}=pendingDelete;const row=draft[key][index];if(key==='people')draft.people.forEach(p=>{if(p.parentId===row.id)p.parentId=row.parentId;});draft[key].splice(index,1);renderList(key);markDirty();pendingDelete=null;$('#delete-dialog').close();});
@@ -61,6 +64,11 @@ $('#people-list').addEventListener('change',async event=>{
   if(!event.target.matches('[data-avatar]'))return;const file=event.target.files[0];if(!file)return;
   const id=draft.people[Number(event.target.closest('[data-index]').dataset.index)].id;avatarJobs++;$('#save-config').disabled=true;message('Đang xử lý ảnh…');
   try{const avatar=await resizeAvatar(file);const person=draft.people.find(p=>p.id===id);if(person){person.avatar=avatar;renderList('people');markDirty();}}catch(error){message(error.message||'Không đọc được tệp ảnh.','error');}finally{avatarJobs--;$('#save-config').disabled=avatarJobs+architectureJobs>0;}
+});
+$('#applications-list').addEventListener('change',async event=>{
+  if(!event.target.matches('[data-app-logo]'))return;const file=event.target.files[0];if(!file)return;
+  const app=draft.applications[Number(event.target.closest('[data-index]').dataset.index)];avatarJobs++;$('#save-config').disabled=true;message('Đang xử lý logo…');
+  try{const logo=await prepareArchitectureLogo(file);if(draft.applications.includes(app)){app.logo=logo;renderList('applications');markDirty();}}catch(error){message(error.message||'Không đọc được tệp logo.','error');}finally{avatarJobs--;$('#save-config').disabled=avatarJobs+architectureJobs>0;}
 });
 $('#config-form').addEventListener('submit',async event=>{
   event.preventDefault();if(avatarJobs+architectureJobs){message('Vui lòng đợi xử lý ảnh hoàn tất.','error');return;}const save=$('#save-config');save.disabled=true;

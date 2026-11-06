@@ -18,6 +18,12 @@ test('configuration rejects active URLs and malformed avatars',()=>{
   assert.equal(safeUrl('javascript:alert(1)'),'');
   const data=clone(defaults);data.people[0].avatar='data:image/svg+xml;base64,PHN2Zz4=';assert.throws(()=>validateConfig(data),/Ảnh/);
 });
+test('application logo is optional and must be a raster data URL',()=>{
+  const data=clone(defaults);data.applications=[{title:'App',description:'',category:'',status:'',url:''}];
+  assert.equal(validateConfig(data).applications[0].logo,'');
+  data.applications[0].logo='data:image/png;base64,iVBORw0KGgo=';assert.equal(validateConfig(data).applications[0].logo,'data:image/png;base64,iVBORw0KGgo=');
+  data.applications[0].logo='data:image/svg+xml;base64,PHN2Zz4=';assert.throws(()=>validateConfig(data),/Logo ứng dụng/);
+});
 test('public build has no editor, setup endpoint or edit links',async()=>{
   const publicRoot=new URL('../dist/',import.meta.url);
   assert.equal((await readdir(publicRoot)).some(name=>name.startsWith('admin')||name.startsWith('auth')),false);
