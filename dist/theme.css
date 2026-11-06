@@ -119,3 +119,4 @@ dialog::backdrop,.arch-dialog::backdrop{background:#11182766;backdrop-filter:blu
 @media(max-width:1180px){main:before{display:none}}
 @media(max-width:800px){.section{padding-block:60px}.about{gap:24px}.hero-inner{padding-block:44px}.hero-chip{margin-bottom:22px}.app-content p{min-height:0}.filter-group{justify-content:flex-start}.closing .button{margin-left:0}.footer-bottom span{max-width:100%}}
 @media(max-width:480px){.topbar{font-size:11px}.brand-name>span{font-size:9px}.hero-actions{gap:10px}.hero-actions .button{width:100%}.pillars-inner>span:nth-child(n){font-size:12px;padding:16px 8px}.roadmap-tabs button{font-size:12px;padding:12px 6px}.roadmap-tabs button span{display:none}.art-bottom{font-size:11px}}
+.security-grid ul{margin:0;padding-left:18px;font-size:14px;color:var(--muted)}.security-grid li+li{margin-top:8px}
