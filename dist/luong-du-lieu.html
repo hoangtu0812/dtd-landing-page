@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Luồng chạy BSR Data Platform</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a process flow diagram (PFD) sheet — drawing on top, stream table and run log below, like an engineering drawing. */
+:root {
+  --bg: #f3f6f7; --sheet: #ffffff; --ink: #17262e; --muted: #5b6d77; --line: #8a9aa3; --grid: #e3eaed;
+  --node: #ffffff; --frame: #eef3f5;
+  --accent: #0a6c8f; --accent-soft: #dcf0f7;
+  --ctl: #b06d12; --ctl-soft: #fbefdc;
+  --bad: #b3322a; --bad-soft: #fbe3e1; --good: #2f7d4a;
+  --display: "Barlow Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1417; --sheet: #121c20; --ink: #dce7eb; --muted: #8fa3ad; --line: #5f727b; --grid: #1c292e;
+  --frame: #17252a; --node: #162328;
+  --accent: #4db5d9; --accent-soft: #123441; --ctl: #e3a64f; --ctl-soft: #3a2a12;
+  --bad: #f07a70; --bad-soft: #3d1a17; --good: #6cc48a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d1417; --sheet: #121c20; --ink: #dce7eb; --muted: #8fa3ad; --line: #5f727b; --grid: #1c292e;
+  --frame: #17252a; --node: #162328;
+  --accent: #4db5d9; --accent-soft: #123441; --ctl: #e3a64f; --ctl-soft: #3a2a12;
+  --bad: #f07a70; --bad-soft: #3d1a17; --good: #6cc48a; color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+h1 { font: 700 clamp(26px, 4vw, 36px)/1.1 var(--display); margin: 0; letter-spacing: .01em; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 62ch; }
+.titleblock { font: 12px/1.5 var(--mono); color: var(--muted); border: 1px solid var(--line); display: grid; grid-template-columns: auto auto; }
+.titleblock span { padding: 3px 10px; border-bottom: 1px solid var(--grid); }
+.titleblock span:nth-child(odd) { border-right: 1px solid var(--grid); text-transform: uppercase; letter-spacing: .06em; font-size: 10.5px; }
+.titleblock span:nth-last-child(-n+2) { border-bottom: 0; }
+
+.sheet { background: var(--sheet); border: 1px solid var(--line); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--grid); }
+.seg { display: inline-flex; border: 1px solid var(--line); }
+.seg button, .btn { font: 600 13px var(--body); padding: 7px 12px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+.btn { background: var(--accent); color: var(--sheet); }
+.btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+button:focus-visible, .node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-left: auto; font-size: 12.5px; color: var(--muted); }
+.legend i { display: inline-block; width: 26px; height: 0; border-top: 2px solid var(--line); vertical-align: middle; margin-right: 6px; }
+.legend .l-ctl { border-top: 2px dashed var(--ctl); }
+.legend .l-plan { border-top: 2px dashed var(--line); }
+
+.drawing { overflow-x: auto; }
+svg { display: block; width: 100%; min-width: 900px; height: auto; }
+svg text { fill: var(--ink); font-family: var(--body); }
+.t-title { font: 600 15px var(--display); letter-spacing: .02em; }
+.t-sub { font-size: 11.5px; fill: var(--muted); }
+.t-tag { font: 600 10.5px var(--mono); fill: var(--muted); letter-spacing: .04em; }
+.t-zone { font: 600 11px var(--mono); fill: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.frame { fill: var(--frame); stroke: var(--line); stroke-dasharray: 2 4; }
+
+.node { cursor: pointer; }
+.node rect, .node circle { fill: var(--node); stroke: var(--line); stroke-width: 1.4; transition: fill .25s, stroke .25s; }
+.node.plan rect { stroke-dasharray: 5 4; }
+.node.plan text { fill: var(--muted); }
+.node:hover rect, .node:hover circle { stroke: var(--ink); }
+.node.sel rect, .node.sel circle { stroke: var(--ink); stroke-width: 2.4; }
+.node.live rect, .node.live circle { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.4; }
+.node.ctl rect, .node.ctl circle { stroke: var(--ctl); }
+.node.ctl.live rect, .node.ctl.live circle { fill: var(--ctl-soft); stroke: var(--ctl); }
+.node.fail rect, .node.fail circle { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 2.4; }
+.node.ctl text.inst { font: 700 13px var(--mono); fill: var(--ctl); }
+
+.flow { fill: none; stroke: var(--line); stroke-width: 1.8; marker-end: url(#a-line); }
+.flow.plan { stroke-dasharray: 6 5; }
+.flow.ctl { stroke: var(--ctl); stroke-dasharray: 7 4; marker-end: url(#a-ctl); }
+.flow.live { stroke: var(--accent); stroke-width: 2.8; stroke-dasharray: 9 7; animation: run .7s linear infinite; marker-end: url(#a-accent); }
+.flow.ctl.live { stroke: var(--ctl); marker-end: url(#a-ctl); }
+@keyframes run { to { stroke-dashoffset: -16; } }
+@media (prefers-reduced-motion: reduce) { .flow.live { animation: none; } .node rect, .node circle { transition: none; } }
+.stream polygon { fill: var(--sheet); stroke: var(--line); stroke-width: 1.2; }
+.stream text { font: 600 10.5px var(--mono); text-anchor: middle; dominant-baseline: central; }
+.stream.live polygon { stroke: var(--accent); fill: var(--accent-soft); }
+
+.below { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 860px) { .below { grid-template-columns: minmax(0, 1fr); } }
+.panel { padding: 18px 20px; min-width: 0; }
+.panel h2 { font: 600 13px var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 12px; }
+.detail h3 { font: 700 24px/1.15 var(--display); margin: 0 0 4px; }
+.detail .role { color: var(--muted); margin: 0 0 14px; }
+.detail dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 7px 16px; margin: 0; }
+.detail dt { font: 600 11px/1.9 var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.detail dd { margin: 0; overflow-wrap: anywhere; }
+.detail code, td code { font: 12.5px var(--mono); }
+.detail a { color: var(--accent); }
+.pill { display: inline-block; font: 600 11px var(--mono); padding: 2px 8px; border: 1px solid currentColor; letter-spacing: .04em; }
+.pill.run { color: var(--good); } .pill.manual { color: var(--ctl); } .pill.plan { color: var(--muted); } .pill.demand { color: var(--accent); }
+
+.log ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.log li { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 10px; padding: 8px 10px; border-left: 3px solid transparent; cursor: pointer; color: var(--muted); }
+.log li time { font: 600 12px/1.6 var(--mono); }
+.log li b { display: block; color: var(--ink); font-weight: 600; }
+.log li.done { color: var(--ink); }
+.log li.cur { border-left-color: var(--accent); background: var(--accent-soft); color: var(--ink); }
+.log li.cur.bad { border-left-color: var(--bad); background: var(--bad-soft); }
+.log li span { font-size: 13.5px; }
+.log .note { font-size: 13px; color: var(--muted); margin: 12px 0 0; }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 13.5px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); border-bottom: 1px solid var(--line); }
+td:first-child { font: 600 13px var(--mono); text-align: center; width: 40px; }
+tr.plan td { color: var(--muted); }
+tr { cursor: pointer; } tr:hover td { background: var(--frame); }
+footer { font-size: 12.5px; color: var(--muted); }
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Luồng chạy BSR Data Platform</h1>
+      <p class="sub">Dữ liệu đi từ Flowie qua kho dữ liệu tới Superset, JupyterHub và hồ Iceberg. Bấm vào một khối để xem chi tiết, hoặc chạy thử một lượt của DAG <code>flowie_to_dwh</code>.</p>
+    </div>
+    <div class="titleblock" aria-label="Thông tin bản vẽ">
+      <span>Bản vẽ</span><span>PFD-DP-001</span>
+      <span>Môi trường</span><span>POC · 192.168.90.53</span>
+      <span>Cập nhật</span><span>06/11/2026</span>
+    </div>
+  </header>
+
+  <section class="sheet" aria-label="Sơ đồ luồng">
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Kịch bản">
+        <button id="sc-ok" type="button" aria-pressed="true">Lượt chạy bình thường</button>
+        <button id="sc-fail" type="button" aria-pressed="false">Có test dữ liệu lỗi</button>
+      </div>
+      <button id="play" class="btn" type="button">▶ Chạy thử một lượt</button>
+      <button id="reset" class="btn ghost" type="button">Đặt lại</button>
+      <div class="legend">
+        <span><i></i>Dòng dữ liệu</span>
+        <span><i class="l-ctl"></i>Lệnh điều khiển (Airflow)</span>
+        <span><i class="l-plan"></i>Kế hoạch</span>
+      </div>
+    </div>
+    <div class="drawing">
+      <svg viewBox="0 0 1220 590" role="img" aria-labelledby="svg-t">
+        <title id="svg-t">Sơ đồ luồng dữ liệu: Flowie và Maximo qua dlt vào kho dữ liệu raw, staging, mart; dbt dựng staging và mart; mart phục vụ Superset, JupyterHub, Trino; Trino ghi Iceberg trên MinIO; Airflow điều khiển; Grafana và OpenMetadata quan sát.</title>
+        <defs>
+          <marker id="a-line" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill: var(--line)"/></marker>
+          <marker id="a-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill: var(--accent)"/></marker>
+          <marker id="a-ctl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill: var(--ctl)"/></marker>
+          <marker id="a-start" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10 0L0 5L10 10z" style="fill: var(--line)"/></marker>
+        </defs>
+
+        <!-- zone labels -->
+        <text class="t-zone" x="30" y="122">Nguồn</text>
+        <text class="t-zone" x="270" y="122">Nạp</text>
+        <text class="t-zone" x="830" y="122">Khai thác</text>
+        <line class="gridline" x1="20" y1="470" x2="1200" y2="470"/>
+        <text class="t-zone" x="30" y="500">Quan sát</text>
+
+        <!-- warehouse frame -->
+        <rect class="frame" x="500" y="110" width="270" height="340"/>
+        <text class="t-zone" x="514" y="132">dwh-postgres · PostgreSQL 17</text>
+
+        <!-- data flows -->
+        <path id="s1" class="flow" d="M200 182 H268"/>
+        <path id="s2" class="flow" d="M430 182 H518"/>
+        <path id="s3" class="flow" d="M605 214 V253"/>
+        <path id="s4" class="flow" d="M605 319 V358"/>
+        <path id="s5" class="flow" d="M690 392 H790 V175 H828"/>
+        <path id="s6" class="flow" d="M790 270 H828"/>
+        <path id="s7" class="flow" d="M790 365 H828"/>
+        <path id="s8" class="flow" d="M1000 365 H1038" style="marker-start: url(#a-start)"/>
+        <path id="s9" class="flow plan" d="M200 342 H235 V205 H268"/>
+        <!-- control signals -->
+        <path id="c1" class="flow ctl" d="M350 78 V138"/>
+        <path id="c2" class="flow ctl" d="M735 78 V264"/>
+        <path id="c3" class="flow ctl" d="M735 266 V234 H620"/>
+        <path id="c4" class="flow ctl" d="M735 308 V339 H620"/>
+
+        <!-- stream numbers -->
+        <g class="stream" id="d1"><polygon points="235,172 245,182 235,192 225,182"/><text x="235" y="182">1</text></g>
+        <g class="stream" id="d2"><polygon points="470,172 480,182 470,192 460,182"/><text x="470" y="182">2</text></g>
+        <g class="stream" id="d3"><polygon points="605,224 615,234 605,244 595,234"/><text x="605" y="234">3</text></g>
+        <g class="stream" id="d4"><polygon points="605,329 615,339 605,349 595,339"/><text x="605" y="339">4</text></g>
+        <g class="stream" id="d5"><polygon points="810,165 820,175 810,185 800,175"/><text x="810" y="175">5</text></g>
+        <g class="stream" id="d6"><polygon points="810,260 820,270 810,280 800,270"/><text x="810" y="270">6</text></g>
+        <g class="stream" id="d7"><polygon points="810,355 820,365 810,375 800,365"/><text x="810" y="365">7</text></g>
+        <g class="stream" id="d8"><polygon points="1019,355 1029,365 1019,375 1009,365"/><text x="1019" y="365">8</text></g>
+        <g class="stream" id="d9"><polygon points="235,265 245,275 235,285 225,275"/><text x="235" y="275">9</text></g>
+
+        <!-- nodes -->
+        <g class="node ctl" id="n-airflow" tabindex="0" role="button" aria-label="Airflow">
+          <rect x="270" y="24" width="500" height="54"/>
+          <text class="t-title" x="286" y="47">Airflow 3.3 · DAG flowie_to_dwh</text>
+          <text class="t-sub" x="286" y="66">Lịch 15 * * * * (phút 15 mỗi giờ) · LocalExecutor · retry 1 lần sau 5 phút</text>
+        </g>
+        <g class="node" id="n-flowie" tabindex="0" role="button" aria-label="Flowie">
+          <rect x="30" y="140" width="170" height="84"/>
+          <text class="t-tag" x="44" y="160">NGUỒN · ĐANG CHẠY</text>
+          <text class="t-title" x="44" y="184">Flowie</text>
+          <text class="t-sub" x="44" y="205">circle-postgres :5433</text>
+        </g>
+        <g class="node plan" id="n-maximo" tabindex="0" role="button" aria-label="Maximo">
+          <rect x="30" y="300" width="170" height="84"/>
+          <text class="t-tag" x="44" y="320">NGUỒN · KẾ HOẠCH</text>
+          <text class="t-title" x="44" y="344">Maximo</text>
+          <text class="t-sub" x="44" y="365">I&amp;I Data Capture</text>
+        </g>
+        <g class="node" id="n-dlt" tabindex="0" role="button" aria-label="dlt">
+          <rect x="270" y="140" width="160" height="84"/>
+          <text class="t-tag" x="284" y="160">TASK load_raw</text>
+          <text class="t-title" x="284" y="184">dlt 1.32</text>
+          <text class="t-sub" x="284" y="205">merge tăng dần</text>
+        </g>
+        <g class="node" id="n-raw" tabindex="0" role="button" aria-label="raw_flowie">
+          <rect x="520" y="150" width="170" height="64"/>
+          <text class="t-tag" x="534" y="170">SCHEMA · BẢNG</text>
+          <text class="t-title" x="534" y="196">raw_flowie</text>
+        </g>
+        <g class="node" id="n-stg" tabindex="0" role="button" aria-label="staging">
+          <rect x="520" y="255" width="170" height="64"/>
+          <text class="t-tag" x="534" y="275">SCHEMA · VIEW</text>
+          <text class="t-title" x="534" y="301">staging</text>
+        </g>
+        <g class="node" id="n-mart" tabindex="0" role="button" aria-label="mart">
+          <rect x="520" y="360" width="170" height="64"/>
+          <text class="t-tag" x="534" y="380">SCHEMA · BẢNG</text>
+          <text class="t-title" x="534" y="406">mart</text>
+        </g>
+        <g class="node ctl" id="n-dbt" tabindex="0" role="button" aria-label="dbt">
+          <circle cx="735" cy="287" r="21"/>
+          <text class="inst" x="735" y="291" text-anchor="middle">dbt</text>
+        </g>
+        <g class="node" id="n-superset" tabindex="0" role="button" aria-label="Superset">
+          <rect x="830" y="140" width="170" height="70"/>
+          <text class="t-title" x="844" y="168">Superset 6.1</text>
+          <text class="t-sub" x="844" y="190">dashboard Flowie</text>
+        </g>
+        <g class="node" id="n-jupyter" tabindex="0" role="button" aria-label="JupyterHub">
+          <rect x="830" y="235" width="170" height="70"/>
+          <text class="t-title" x="844" y="263">JupyterHub 5.5</text>
+          <text class="t-sub" x="844" y="285">notebook phân tích</text>
+        </g>
+        <g class="node" id="n-trino" tabindex="0" role="button" aria-label="Trino">
+          <rect x="830" y="330" width="170" height="70"/>
+          <text class="t-title" x="844" y="358">Trino 484</text>
+          <text class="t-sub" x="844" y="380">catalog dwh + iceberg</text>
+        </g>
+        <g class="node" id="n-iceberg" tabindex="0" role="button" aria-label="Iceberg">
+          <rect x="1040" y="315" width="160" height="100"/>
+          <text class="t-tag" x="1054" y="335">HỒ DỮ LIỆU</text>
+          <text class="t-title" x="1054" y="359">Iceberg</text>
+          <text class="t-sub" x="1054" y="380">MinIO (file)</text>
+          <text class="t-sub" x="1054" y="398">Lakekeeper (catalog)</text>
+        </g>
+        <g class="node" id="n-grafana" tabindex="0" role="button" aria-label="Grafana">
+          <rect x="270" y="490" width="300" height="70"/>
+          <text class="t-title" x="286" y="518">Grafana · Loki · Prometheus</text>
+          <text class="t-sub" x="286" y="540">log task, trạng thái DAG, tài nguyên container</text>
+        </g>
+        <g class="node" id="n-om" tabindex="0" role="button" aria-label="OpenMetadata">
+          <rect x="600" y="490" width="400" height="70"/>
+          <text class="t-title" x="616" y="518">OpenMetadata 2.0 · danh mục dữ liệu</text>
+          <text class="t-sub" x="616" y="540">thu thập metadata kho, dbt, Superset, hồ Iceberg (chạy tay)</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <div class="below">
+    <section class="sheet panel detail" aria-live="polite">
+      <h2>Chi tiết khối</h2>
+      <div id="detail"></div>
+    </section>
+    <section class="sheet panel log">
+      <h2>Nhật ký lượt chạy <span style="text-transform:none;letter-spacing:0">(giờ minh hoạ)</span></h2>
+      <ol id="log"></ol>
+      <p class="note" id="log-note"></p>
+    </section>
+  </div>
+
+  <section class="sheet panel">
+    <h2>Bảng dòng dữ liệu</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Từ → Đến</th><th>Nội dung</th><th>Khi nào</th><th>Công cụ</th></tr></thead>
+        <tbody id="streams"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Nguồn: repo BSR-Data-Platform (bsr-idt) — <code>dags/flowie_to_dwh.py</code>, <code>pipelines/flowie.py</code>, <code>dbt/</code>, <code>infra/</code>. Bản POC chưa bật đăng nhập SSO, chưa có cảnh báo tự động và chưa sao lưu.</footer>
+</div>
+
+<script>
+const NODES = {
+  'n-airflow': { title: 'Airflow', role: 'Bộ điều phối: chạy các bước theo lịch và theo đúng thứ tự.', status: ['run', 'Đang chạy'],
+    rows: [['Ở đâu', '<code>/opt/airflow</code> · <a href="https://poc-dtd.bsr.com.vn/airflow/" target="_blank" rel="noopener">poc-dtd.bsr.com.vn/airflow</a>'],
+      ['Lịch', '<code>15 * * * *</code>, mỗi lúc chỉ 1 lượt (max_active_runs=1)'],
+      ['Các bước', '<code>load_raw</code> (dlt) → <code>dbt_build</code> (dbt)'],
+      ['Khi lỗi', 'Chạy lại 1 lần sau 5 phút, sau đó đánh dấu failed'],
+      ['Ghi chú', 'Image <code>bsr-airflow:3.3.2-dp1</code> có sẵn dlt và dbt trong <code>/home/airflow/dp-venv</code>']] },
+  'n-flowie': { title: 'Flowie', role: 'Ứng dụng quản lý công việc, nguồn dữ liệu đầu tiên.', status: ['run', 'Đang nạp'],
+    rows: [['Kết nối', '<code>circle-postgres:5433</code>, role <code>flowie_ro</code> chỉ đọc'],
+      ['Giới hạn', 'Chỉ được đọc các cột cần dùng; tối đa 5 kết nối'],
+      ['Bảng', 'issues, issue_statuses, projects, teams, users, issue_lifecycle_events']] },
+  'n-maximo': { title: 'Maximo', role: 'Dữ liệu bảo dưỡng (Work Order, thiết bị) từ module Data Capture của I&I Platform.', status: ['plan', 'Kế hoạch'],
+    rows: [['Trạng thái', 'Chờ quyền đọc DB của I&I Platform'],
+      ['Cách làm', 'Bắt đầu từ <code>docs/data-contract-template.md</code>, thêm một nguồn dlt và một nhánh dbt như Flowie']] },
+  'n-dlt': { title: 'dlt', role: 'Đọc bảng nguồn và ghi vào schema raw của kho.', status: ['run', 'Mỗi giờ'],
+    rows: [['Script', '<code>pipelines/flowie.py</code>'],
+      ['Cách nạp', 'Chỉ lấy dòng có <code>updated_at</code> mới hơn lần trước, merge theo <code>id</code>'],
+      ['Đọc', 'Lần lượt từng bảng (chế độ fifo, vì giới hạn 5 kết nối), mỗi lần 5.000 dòng'],
+      ['Kiểu cột', 'Lấy từ kiểu cột của Postgres nguồn, nên cột toàn NULL vẫn được tạo'],
+      ['Nạp lại', '<code>flowie.py --full-refresh</code> xoá raw và nạp lại từ đầu']] },
+  'n-raw': { title: 'raw_flowie', role: 'Bản sao gần như nguyên vẹn của bảng nguồn, cộng cột theo dõi của dlt.', status: ['run', 'Bảng'],
+    rows: [['Ghi bởi', 'role <code>dwh_loader</code> (dlt)'],
+      ['Lưu ý', 'Bản ghi bị xoá ở Flowie hiện chưa được phát hiện, vì chỉ nạp dòng mới hoặc vừa sửa']] },
+  'n-stg': { title: 'staging', role: 'View làm sạch: đổi tên cột, chuẩn hoá kiểu dữ liệu, một view cho mỗi bảng nguồn.', status: ['run', 'View'],
+    rows: [['Model', 'stg_flowie__issues, __issue_statuses, __projects, __teams, __users'],
+      ['Dựng bởi', 'dbt, role <code>dwh_dbt</code>'],
+      ['Kiểm tra', 'Test dữ liệu khai báo trong <code>_flowie__sources.yml</code>']] },
+  'n-mart': { title: 'mart', role: 'Bảng sẵn sàng cho báo cáo. Người dùng và công cụ BI chỉ đọc schema này.', status: ['run', 'Bảng'],
+    rows: [['Bảng', '<code>flowie_issues</code> (lead time, trạng thái, người phụ trách), <code>flowie_projects</code> (% hoàn thành)'],
+      ['Đọc bởi', 'role <code>dwh_reader</code>: Superset, JupyterHub, Trino'],
+      ['Ghi chú', 'Cột số có độ chính xác cố định (numeric(10,2), numeric(5,1)) để Iceberg nhận được']] },
+  'n-dbt': { title: 'dbt', role: 'Biến đổi raw → staging → mart bằng SQL, chạy test ngay sau mỗi model.', status: ['run', 'Mỗi giờ'],
+    rows: [['Lệnh', '<code>dbt build --select source:flowie+</code>'],
+      ['Phiên bản', 'dbt-core 1.12.6, dbt-postgres 1.11.0'],
+      ['Khi test lỗi', 'Các model phía sau bị bỏ qua, task <code>dbt_build</code> thất bại']] },
+  'n-superset': { title: 'Apache Superset', role: 'Công cụ BI: dashboard và truy vấn SQL cho người dùng nghiệp vụ.', status: ['demand', 'Khi có người mở'],
+    rows: [['Ở đâu', '<a href="https://poc-dtd.bsr.com.vn/superset/superset/dashboard/flowie/" target="_blank" rel="noopener">Dashboard Flowie</a>'],
+      ['Kết nối', 'Kho dữ liệu (mart, qua <code>dwh_reader</code>) và "Trino Lakehouse"'],
+      ['Cache', 'Redis; số liệu mới hiện ra khi cache hết hạn']] },
+  'n-jupyter': { title: 'JupyterHub', role: 'Notebook Python để phân tích sâu hoặc thử mô hình.', status: ['demand', 'Theo yêu cầu'],
+    rows: [['Ở đâu', '<a href="https://poc-dtd.bsr.com.vn/jupyter/" target="_blank" rel="noopener">poc-dtd.bsr.com.vn/jupyter</a>'],
+      ['Kết nối', 'Biến <code>DWH_URL</code> (chỉ đọc mart) và <code>TRINO_URL</code>'],
+      ['Mẫu', 'Notebook <code>flowie_demo.ipynb</code> có sẵn cho mỗi người dùng']] },
+  'n-trino': { title: 'Trino', role: 'Bộ máy SQL truy vấn cùng lúc kho dữ liệu và hồ Iceberg.', status: ['demand', 'Theo truy vấn'],
+    rows: [['Ở đâu', '<code>http://192.168.90.53:8092</code> (chỉ trong mạng nội bộ)'],
+      ['Catalog', '<code>dwh</code> (PostgreSQL, đọc mart) và <code>iceberg</code> (hồ dữ liệu)'],
+      ['Lưu ý', 'Chưa bật xác thực; đang dùng khoá root của MinIO']] },
+  'n-iceberg': { title: 'Hồ dữ liệu Iceberg', role: 'Bảng dạng file Parquet trên MinIO, quản lý bởi catalog Lakekeeper; hợp với dữ liệu lớn và lịch sử dài.', status: ['manual', 'Chạy tay'],
+    rows: [['Bảng demo', '<code>iceberg.flowie.issues_snapshot</code>, phân vùng theo tháng'],
+      ['MinIO', '<a href="https://poc-dtd.bsr.com.vn/minio/" target="_blank" rel="noopener">poc-dtd.bsr.com.vn/minio</a>, bucket <code>lakehouse</code>'],
+      ['Lakekeeper', '<code>http://192.168.90.53:8181/ui/</code>'],
+      ['Lưu ý', 'Hiện là một lần chụp; chưa có DAG chụp định kỳ']] },
+  'n-grafana': { title: 'Grafana', role: 'Theo dõi vận hành: log, trạng thái DAG, tài nguyên server.', status: ['run', 'Liên tục'],
+    rows: [['Ở đâu', '<a href="https://poc-dtd.bsr.com.vn/grafana/" target="_blank" rel="noopener">poc-dtd.bsr.com.vn/grafana</a>, dashboard <code>airflow</code> và <code>flowie</code>'],
+      ['Log', 'Alloy gom log container vào Loki'],
+      ['Trạng thái DAG', 'Đọc DB của Airflow qua role <code>grafana_ro</code>'],
+      ['Thiếu', 'Chưa có cảnh báo tự động khi DAG lỗi']] },
+  'n-om': { title: 'OpenMetadata', role: 'Danh mục dữ liệu: bảng nào ở đâu, ý nghĩa cột, lineage từ nguồn tới dashboard.', status: ['manual', 'Chạy tay'],
+    rows: [['Ở đâu', '<code>http://192.168.90.53:8585</code> (cần subdomain riêng)'],
+      ['Thu thập', '<code>run_ingestion.py</code>: kho dữ liệu, dbt, Superset, hồ Iceberg'],
+      ['Thiếu', 'Chưa đặt lịch; chạy lại bằng tay sau khi đổi model']] },
+};
+
+const STREAMS = [
+  ['1', 'Flowie → dlt', '6 bảng, đọc qua <code>flowie_ro</code>, mỗi lần 5.000 dòng', 'Phút 15 mỗi giờ', 'dlt 1.32', ['n-flowie', 'n-dlt']],
+  ['2', 'dlt → raw_flowie', 'Merge theo <code>id</code>, chỉ dòng có <code>updated_at</code> mới', 'Ngay sau bước 1', 'dlt', ['n-dlt', 'n-raw']],
+  ['3', 'raw_flowie → staging', '5 view <code>stg_flowie__*</code>', 'Task dbt_build', 'dbt 1.12', ['n-raw', 'n-stg']],
+  ['4', 'staging → mart', '<code>flowie_issues</code>, <code>flowie_projects</code> + test', 'Task dbt_build', 'dbt 1.12', ['n-stg', 'n-mart']],
+  ['5', 'mart → Superset', 'Dashboard Flowie, qua <code>dwh_reader</code>', 'Khi có người mở', 'Superset 6.1', ['n-mart', 'n-superset']],
+  ['6', 'mart → JupyterHub', '<code>DWH_URL</code>, chỉ đọc mart', 'Theo yêu cầu', 'JupyterHub 5.5', ['n-mart', 'n-jupyter']],
+  ['7', 'mart → Trino', 'Catalog <code>dwh</code>', 'Theo truy vấn', 'Trino 484', ['n-mart', 'n-trino']],
+  ['8', 'Trino ↔ Iceberg', '<code>issues_snapshot</code>, phân vùng theo tháng, file trên MinIO', 'Chạy tay (một lần)', 'Trino + Lakekeeper', ['n-trino', 'n-iceberg']],
+  ['9', 'Maximo → dlt', 'Snapshot Maximo trong I&amp;I Data Capture', 'Kế hoạch', 'dlt', ['n-maximo', 'n-dlt'], true],
+];
+
+const COMMON = [
+  { t: '09:15:00', b: 'Airflow kích hoạt DAG', s: 'Scheduler tạo lượt chạy theo lịch 15 * * * *.', n: ['n-airflow'], e: ['c1'] },
+  { t: '09:15:02', b: 'load_raw: dlt đọc Flowie', s: 'Đọc lần lượt từng bảng qua flowie_ro, mỗi lần 5.000 dòng.', n: ['n-airflow', 'n-flowie', 'n-dlt'], e: ['c1', 's1'], d: ['d1'] },
+  { t: '09:15:20', b: 'Ghi vào raw_flowie', s: 'Chỉ dòng mới hoặc vừa sửa; merge theo id.', n: ['n-dlt', 'n-raw'], e: ['s2'], d: ['d2'] },
+  { t: '09:15:45', b: 'dbt_build: dựng staging', s: 'dbt tạo lại 5 view và chạy test của chúng.', n: ['n-airflow', 'n-dbt', 'n-raw', 'n-stg'], e: ['c2', 'c3', 's3'], d: ['d3'] },
+];
+const SCENARIOS = {
+  ok: { steps: COMMON.concat([
+      { t: '09:16:10', b: 'Dựng mart và chạy test', s: 'flowie_issues và flowie_projects được tạo lại; mọi test đạt.', n: ['n-dbt', 'n-stg', 'n-mart'], e: ['c4', 's4'], d: ['d4'] },
+      { t: '09:16:30', b: 'Superset có số liệu mới', s: 'Dashboard đọc mart; biểu đồ cập nhật khi cache Redis hết hạn.', n: ['n-mart', 'n-superset'], e: ['s5'], d: ['d5'] },
+      { t: '09:16:31', b: 'Grafana ghi nhận lượt chạy thành công', s: 'Log task vào Loki; dashboard Airflow hiện trạng thái success.', n: ['n-grafana', 'n-airflow'], e: [] },
+    ]), note: 'JupyterHub, Trino và hồ Iceberg không nằm trong DAG: người dùng truy vấn mart khi cần.' },
+  fail: { steps: COMMON.concat([
+      { t: '09:16:10', b: 'Test dữ liệu lỗi', s: 'Ví dụ: một issue trỏ tới project không tồn tại. dbt bỏ qua mart, task thất bại.', n: ['n-dbt', 'n-stg'], f: ['n-mart'], e: ['c4'], bad: true },
+      { t: '09:21:10', b: 'Airflow chạy lại dbt_build', s: 'retries=1, chờ 5 phút. Lỗi vẫn còn nên lượt chạy bị đánh dấu failed.', n: ['n-airflow'], f: ['n-dbt'], e: ['c2'], bad: true },
+      { t: '09:21:40', b: 'Dashboard giữ số liệu lần trước', s: 'mart không bị ghi đè bởi dữ liệu lỗi; Superset vẫn hiện số của lượt 08:15.', n: ['n-mart', 'n-superset'], e: ['s5'], d: ['d5'] },
+      { t: '09:21:41', b: 'Grafana hiện lượt failed', s: 'Lỗi xem được trong log Loki. Chưa có cảnh báo gửi đi, phải có người mở dashboard.', n: ['n-grafana'], f: ['n-airflow'], e: [], bad: true },
+    ]), note: 'Sửa dữ liệu ở Flowie (hoặc sửa test), lượt chạy kế tiếp lúc 10:15 sẽ tự dựng lại mart.' },
+};
+
+const $ = (s) => document.querySelector(s);
+const svg = $('svg');
+let scenario = 'ok', idx = -1, timer = null, selected = 'n-airflow';
+
+function renderDetail(id) {
+  const n = NODES[id]; if (!n) return;
+  selected = id;
+  svg.querySelectorAll('.node').forEach((g) => g.classList.toggle('sel', g.id === id));
+  $('#detail').innerHTML = `<h3>${n.title} <span class="pill ${n.status[0]}">${n.status[1]}</span></h3><p class="role">${n.role}</p>` +
+    `<dl>${n.rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>`;
+}
+
+function clearLive() { svg.querySelectorAll('.live, .fail').forEach((el) => el.classList.remove('live', 'fail')); }
+
+function show(i) {
+  const steps = SCENARIOS[scenario].steps;
+  idx = i; clearLive();
+  const st = steps[i];
+  if (st) {
+    st.n.forEach((id) => document.getElementById(id).classList.add('live'));
+    (st.f || []).forEach((id) => document.getElementById(id).classList.add('fail'));
+    st.e.forEach((id) => document.getElementById(id).classList.add('live'));
+    (st.d || []).forEach((id) => document.getElementById(id).classList.add('live'));
+  }
+  [...$('#log').children].forEach((li, j) => {
+    li.classList.toggle('done', j <= i);
+    li.classList.toggle('cur', j === i);
+    li.classList.toggle('bad', j === i && !!steps[j].bad);
+  });
+  $('#log-note').textContent = i === steps.length - 1 ? SCENARIOS[scenario].note : '';
+}
+
+function renderLog() {
+  const steps = SCENARIOS[scenario].steps;
+  $('#log').innerHTML = steps.map((s, j) => `<li tabindex="0" data-i="${j}"><time>${s.t}</time><span><b>${s.b}</b>${s.s}</span></li>`).join('');
+  $('#log-note').textContent = 'Bấm "Chạy thử một lượt" hoặc chọn một bước.';
+}
+
+function stop() { clearInterval(timer); timer = null; $('#play').textContent = '▶ Chạy thử một lượt'; }
+function play() {
+  if (timer) return stop();
+  const steps = SCENARIOS[scenario].steps;
+  if (idx >= steps.length - 1) idx = -1;
+  $('#play').textContent = '❚❚ Tạm dừng';
+  show(idx + 1);
+  timer = setInterval(() => { if (idx >= steps.length - 1) return stop(); show(idx + 1); }, 1800);
+}
+function reset() { stop(); idx = -1; clearLive(); renderLog(); }
+
+function setScenario(key) {
+  scenario = key;
+  $('#sc-ok').setAttribute('aria-pressed', key === 'ok');
+  $('#sc-fail').setAttribute('aria-pressed', key === 'fail');
+  reset();
+}
+
+svg.querySelectorAll('.node').forEach((g) => {
+  g.addEventListener('click', () => renderDetail(g.id));
+  g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); renderDetail(g.id); } });
+});
+$('#log').addEventListener('click', (e) => { const li = e.target.closest('li'); if (li) { stop(); show(+li.dataset.i); } });
+$('#log').addEventListener('keydown', (e) => { const li = e.target.closest('li'); if (li && e.key === 'Enter') { stop(); show(+li.dataset.i); } });
+$('#play').addEventListener('click', play);
+$('#reset').addEventListener('click', reset);
+$('#sc-ok').addEventListener('click', () => setScenario('ok'));
+$('#sc-fail').addEventListener('click', () => setScenario('fail'));
+
+$('#streams').innerHTML = STREAMS.map(([n, ft, c, w, tool, nodes, plan]) =>
+  `<tr class="${plan ? 'plan' : ''}" data-node="${nodes[1]}"><td>${n}</td><td>${ft}</td><td>${c}</td><td>${w}</td><td>${tool}</td></tr>`).join('');
+$('#streams').addEventListener('click', (e) => { const tr = e.target.closest('tr'); if (tr) renderDetail(tr.dataset.node); });
+
+renderLog();
+renderDetail(selected);
+show(3); // open on a mid-run frame so the diagram shows a live flow at rest
+</script>
+</body>
+</html>
